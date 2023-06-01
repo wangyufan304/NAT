@@ -6,7 +6,7 @@
 
 一个通俗的例子是家庭网络中的摄像头访问。假设您在家中安装了一个摄像头，并希望能够通过互联网远程访问它，例如从手机或电脑上查看实时视频。然而，摄像头连接到的是家庭网络中的私有IP地址，而互联网无法直接访问该私有IP地址。这时，您可以使用内网穿透技术，将摄像头的数据流通过公共网络传输到您的手机或电脑上。通过配置适当的内网穿透工具和设置，您可以在不同网络环境中，通过公共网络连接到私有网络中的摄像头，实现远程访问和监控。
 
-![](D:\goworkplace\src\github.com\byteYuFan\Intranet-penetration\images\1-NAT概述.png)
+![](./images/1-NAT概述.png)
 
 接下来我会由GO语言逐渐的开发一个NAT插件
 
@@ -190,7 +190,7 @@ func main() {
 
 测试说明：9999端口的服务器向`remote`发送数据，观察`local`的服务端是否会收到数据，为什么是这样的呢因为`go network.SwapConnData(local, remote)`是这样启动的，remote对应的是读端，意思就是读端有数据时向local的写端进行拷贝，正好对应着服务器`9999`发送数据，服务器`8888`接收数据。
 
-![](D:\goworkplace\src\github.com\byteYuFan\Intranet-penetration\images\3-test交换数据.png)
+![](./images/3-test交换数据.png)
 
 要想双方都能互相进行收发数据，十分简单：
 
@@ -202,7 +202,7 @@ func SwapConnDataEachOther(local, remote *net.TCPConn) {
 }
 ```
 
-![](D:\goworkplace\src\github.com\byteYuFan\Intranet-penetration\images\4-TEST-互相交换数据.png)
+![](./images/4-TEST-互相交换数据.png)
 
 ### 2.3. 内网客户端开发
 
