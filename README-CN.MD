@@ -552,10 +552,10 @@ C:\Users\wangyufan>curl pogf.com.cn:8007
 
 测试成功下面我们来看看成功之后的现象：
 
-![](D:\goworkplace\src\github.com\byteYuFan\Intranet-penetration\images\5-内网服务器现象.png)
+![](./images/5-内网服务器现象.png)
 
-![](D:\goworkplace\src\github.com\byteYuFan\Intranet-penetration\images\6-服务器现象.png)
+![](./images/6-服务器现象.png)
 
-![](D:\goworkplace\src\github.com\byteYuFan\Intranet-penetration\images\7-内网客户端现象.png)
+![](./images/7-内网客户端现象.png)
 
 测试成功，可能有点不足，但是第一个版本确实已经成功啦。太酷啦。
