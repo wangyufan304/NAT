@@ -18,7 +18,7 @@ import (
 
 const (
 	// 控制信息地址
-	controllerAddr = "0.0.0.0:8009"
+	controllerAddr = "0.0.0.0:8080"
 	// 隧道地址
 	tunnelAddr = "0.0.0.0:8008"
 	// 外部访问地址
@@ -34,6 +34,8 @@ var (
 	connectionPool map[string]*UserConnInfo
 	// 保护连接池用的锁
 	connectionPoolLock sync.Mutex
+	// 信号
+	readyNATConn chan *net.TCPConn
 )
 
 // UserConnInfo 用户连接信息,此处保存的是用户访问公网web所对应的那个接口
@@ -51,12 +53,14 @@ func main() {
 	go Accept()
 	go acceptClientRequest()
 	cleanExpireConnPool()
+	select {}
 }
 func init() {
 	connPool = instance.NewConnPool()
 	for i := 0; i < int(connPool.MaxTCPConn); i++ {
 		connPool.TaskQueue[i] = make(chan *instance.Request, connPool.BufferSize)
 	}
+	readyNATConn = make(chan *net.TCPConn, 16)
 }
 
 // createControllerChannel 创建一个控制信息的通道，用于传递控制消息
@@ -80,22 +84,21 @@ func createControllerChannel() {
 	}
 }
 func dealWithControllerInfo(tcpConn *net.TCPConn) {
-	// 当接收到新地连接请求时
-	req := instance.NewRequest(connPool.Counter, tcpConn, nil)
-	atomic.AddInt64(&connPool.Counter, 1)
-	// 采用轮询的方式为客户端分配uid 采用与最大连接数取余作为负载均衡
-	uid := req.GetConnectionUID() % int64(connPool.GetMaxTCPConn())
-	connPool.TaskQueue[uid] <- req
-	// TODO 考虑最后在心跳包里面进行连接的释放
-	// 返回数据应该包括 客户端编号和端口
+	uid := connPool.AddTCPConn(tcpConn)
+	// 发送信号给readyChannel
+	fmt.Println("[向ready推送消息]")
+	readyNATConn <- tcpConn
+	readChan := make(chan bool)
+	go sendControllerDataToClient(uid, tcpConn, readChan)
+	go keepAliveDevice(tcpConn, uid, readChan)
+}
+
+func sendControllerDataToClient(uid int64, conn *net.TCPConn, signalChan chan bool) {
 	dataControllerInfo := &network.ControllerInfo{
-		ID:             uint64(req.GetConnectionUID()),
+		ID:             uint64(connPool.Counter),
 		Port:           connPool.Port[uid],
 		CurrentConnNum: uint32(connPool.CurrentConnNum),
 	}
-	connPool.ConnInfo[tcpConn] = connPool.Port[uid]
-	fmt.Println("[insert]", connPool.ConnInfo[tcpConn])
-	// 使用二进制编码将对象转换为字节流
 	byteData, err := utils.ObjectToBufferStream(dataControllerInfo)
 	if err != nil {
 		fmt.Println("[TO Buffer]", err)
@@ -110,27 +113,28 @@ func dealWithControllerInfo(tcpConn *net.TCPConn) {
 		fmt.Println("[Pack]", err)
 		return
 	}
-	written, err := tcpConn.Write(s)
+	written, err := conn.Write(s)
 	if err != nil {
 		fmt.Println("[Written]", err)
 		return
 	}
 	fmt.Println("[WriteData Successfully]", written)
+	signalChan <- true
 	// 启动监听客户端进程
 	// TODO 启动一个心跳检测装置
-	go keepAliveDevice(tcpConn, uid)
 }
 
 // keepAliveDevice 心跳包检测机制
-func keepAliveDevice(tcpConn *net.TCPConn, uid int64) {
+func keepAliveDevice(tcpConn *net.TCPConn, uid int64, signalChan chan bool) {
 	//
+	select {
+	case <-signalChan:
+		break
+	}
 	fmt.Println("[KeepAlive Running]..........")
 	go func(conn *net.TCPConn) {
 		var heartCount uint64
 		for {
-			if tcpConn == nil {
-				break
-			}
 			// 封装TCP心跳包包的数据
 			keepData := network.NewKeepAlive(heartCount, "ping")
 			keepDataReady, err := utils.ObjectToBufferStream(keepData)
@@ -146,30 +150,30 @@ func keepAliveDevice(tcpConn *net.TCPConn, uid int64) {
 				fmt.Println("[Pack]", err)
 				return
 			}
-			written, err := tcpConn.Write(readyStream)
+			_, err = tcpConn.Write(readyStream)
 			if err != nil {
-				fmt.Println("[write]", err)
-				tcpConn.Close()
-				tcpConn = nil
+				break
 			}
-			fmt.Println("[Write successfully]", written)
+			//fmt.Println("[Write successfully]", written)
 			time.Sleep(5 * time.Second)
 		}
 		fmt.Println("[客户端关闭]", "心跳检测停止")
-		<-connPool.TaskQueue[uid]
 		fmt.Println("[客户端从工作队列出列]")
-		atomic.AddInt32(&connPool.CurrentConnNum, -1)
+		req := connPool.RemoveConn(uid, tcpConn)
+		fmt.Println("[ID]", req.ConnParticularInfo.ID, "退出")
 	}(tcpConn)
 }
 
 // Accept 监听来自用户的请求
 func Accept() {
 	for {
-		for k, v := range connPool.ConnInfo {
-			userVisitAddr := "0.0.0.0" + strconv.Itoa(int(v))
-			go acceptUserRequest(k, userVisitAddr)
+		select {
+		case conn := <-readyNATConn:
+			// 获取连接端口号
+			fmt.Println("[接受到创建tcp连接信号]")
+			userVisitAddr := "0.0.0.0:" + strconv.Itoa(int(connPool.ConnInfo[conn]))
+			go acceptUserRequest(conn, userVisitAddr)
 		}
-		time.Sleep(time.Millisecond * 100)
 	}
 }
 func acceptUserRequest(natClientConn *net.TCPConn, userVisitAddr string) {
@@ -177,7 +181,7 @@ func acceptUserRequest(natClientConn *net.TCPConn, userVisitAddr string) {
 	fmt.Println("[CreateConn]", userVisitAddr)
 	if err != nil {
 		log.Println("[CreateVisitListener]" + err.Error())
-		panic(err)
+		return
 	}
 	defer listener.Close()
 	for {

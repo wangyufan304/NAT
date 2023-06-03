@@ -5,29 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f5bb7360-b6fb-44f1-acf9-99542aa1739f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/client/function.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/instance/connInfo.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/instance/connpool.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/instance/dagapackage.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/instance/message.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/instance/request.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/network/protocol.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/network/protocol_test.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/network/value.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ninterfance/biniary.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ninterfance/idatapackage.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ninterfance/imessage.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ninterfance/irequest.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/tcp/client.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/tcp/protocol.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/tcp/server.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/binary.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/binary_test.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/client.exe" beforeDir="false" afterPath="$PROJECT_DIR$/client/client.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/function.go" beforeDir="false" afterPath="$PROJECT_DIR$/client/function.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/client/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/network/network.go" beforeDir="false" afterPath="$PROJECT_DIR$/network/network.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instance/connpool.go" beforeDir="false" afterPath="$PROJECT_DIR$/instance/connpool.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/server.exe" beforeDir="false" afterPath="$PROJECT_DIR$/server/server.exe" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

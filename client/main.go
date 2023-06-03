@@ -16,40 +16,16 @@ var (
 	// 公网ip
 	publicAddr = "pogf.com.cn"
 	// 本地服务的地址
-	localServerAddr = "127.0.0.1:8080"
+	localServerAddr = "127.0.0.1:8081"
 	// 公网服务端的控制接口
 	controllerServerAddr = publicAddr + ":8080"
 	// 公网隧道地址
 	tunnelServerAddr = publicAddr + ":8008"
 )
-var clientInfo *network.ControllerInfo
+var clientInfo = new(network.ControllerInfo)
 
-//	func main() {
-//		// 与服务器的控制接口建立TCP连接 使用我们工具包的函数
-//		controllerTCPConn, err := network.CreateTCPConn(controllerServerAddr)
-//		if err != nil {
-//			log.Println("[CreateTCPConn]" + controllerServerAddr + err.Error())
-//			return
-//		}
-//		log.Println("[Conn Successfully]" + controllerServerAddr)
-//		// 新建一个Reader从控制通道中进行连接
-//		reader := bufio.NewReader(controllerTCPConn)
-//		// 不断的读取从通道读取信息
-//		for {
-//			line, err := reader.ReadString('\n')
-//			if err != nil || err == io.EOF {
-//				log.Println("[Controller ReadSting]" + err.Error())
-//				break
-//			}
-//			// 接收到连接的信号
-//			if line == network.NewConnection+"\n" {
-//				// 创建连接
-//				fmt.Println("[创建管道]")
-//				go connectLocalAndTunnel()
-//			}
-//
-//		}
-//	}
+var singleChan = make(chan *net.TCPConn)
+
 func main() {
 	// 与服务器的控制接口建立TCP连接 使用我们工具包的函数
 	controllerTCPConn, err := network.CreateTCPConn(controllerServerAddr)
@@ -59,14 +35,21 @@ func main() {
 	}
 	log.Println("[Conn Successfully]" + controllerServerAddr)
 	go dealWithControllerInformation(controllerTCPConn)
-	select {}
+	select {
+	case conn := <-singleChan:
+		conn.Close()
+	}
 }
 
 // 处理控制连接信息
 func dealWithControllerInformation(controllerTCPConn *net.TCPConn) {
 	defer controllerTCPConn.Close()
-
 	for {
+		if clientInfo.CurrentConnNum > 1 {
+			time.Sleep(time.Second)
+			fmt.Println("[连接数量过大，出局]")
+			continue
+		}
 		var keep *network.KeepAlive
 		time.Sleep(time.Second * 1)
 		HeadData, err := utils.ReadHeadData(controllerTCPConn)
@@ -86,7 +69,7 @@ func dealWithControllerInformation(controllerTCPConn *net.TCPConn) {
 		}
 		switch msg.GetMsgID() {
 		case network.CONTROLLER_INFO:
-			err = dealWithControllerData(&clientInfo, data)
+			err = dealWithControllerData(clientInfo, data)
 			if err != nil {
 				fmt.Println("[ControllerData]", err)
 				return
@@ -102,6 +85,7 @@ func dealWithControllerInformation(controllerTCPConn *net.TCPConn) {
 			}
 			fmt.Println("[ID]", keep.ID, "[MSG]", string(keep.Msg))
 		case 1:
+
 			fmt.Println("[New]", string(data))
 			go connectLocalAndTunnel()
 		}
