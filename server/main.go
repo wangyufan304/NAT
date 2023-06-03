@@ -1,11 +1,15 @@
 package main
 
 import (
+	"fmt"
+	"github.com/byteYuFan/NAT/instance"
 	"github.com/byteYuFan/NAT/network"
+	"github.com/byteYuFan/NAT/utils"
 	"log"
 	"net"
 	"strconv"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -22,6 +26,8 @@ const (
 )
 
 var (
+	//
+	connPool *instance.ConnPool
 	// 内网客户端连接 目前只支持一个客户端进行连接
 	clientConn *net.TCPConn
 	// 用户连接池
@@ -42,9 +48,15 @@ func main() {
 	// 初始化连接池默认大小为128
 	connectionPool = make(map[string]*UserConnInfo, 128)
 	go createControllerChannel()
-	go acceptUserRequest()
+	go Accept()
 	go acceptClientRequest()
 	cleanExpireConnPool()
+}
+func init() {
+	connPool = instance.NewConnPool()
+	for i := 0; i < int(connPool.MaxTCPConn); i++ {
+		connPool.TaskQueue[i] = make(chan *instance.Request, connPool.BufferSize)
+	}
 }
 
 // createControllerChannel 创建一个控制信息的通道，用于传递控制消息
@@ -62,19 +74,107 @@ func createControllerChannel() {
 			continue
 		}
 		log.Println("[控制层接收到新的连接]", tcpConn.RemoteAddr())
-		// 如果全局变量不为空的话，丢弃该连接
-		if clientConn != nil {
-			_ = tcpConn.Close()
-		} else {
-			clientConn = tcpConn
-		}
-
+		atomic.AddInt32(&connPool.CurrentConnNum, 1)
+		fmt.Println("[Receive CONN]", tcpConn.RemoteAddr().String())
+		go dealWithControllerInfo(tcpConn)
 	}
 }
+func dealWithControllerInfo(tcpConn *net.TCPConn) {
+	// 当接收到新地连接请求时
+	req := instance.NewRequest(connPool.Counter, tcpConn, nil)
+	atomic.AddInt64(&connPool.Counter, 1)
+	// 采用轮询的方式为客户端分配uid 采用与最大连接数取余作为负载均衡
+	uid := req.GetConnectionUID() % int64(connPool.GetMaxTCPConn())
+	connPool.TaskQueue[uid] <- req
+	// TODO 考虑最后在心跳包里面进行连接的释放
+	// 返回数据应该包括 客户端编号和端口
+	dataControllerInfo := &network.ControllerInfo{
+		ID:             uint64(req.GetConnectionUID()),
+		Port:           connPool.Port[uid],
+		CurrentConnNum: uint32(connPool.CurrentConnNum),
+	}
+	connPool.ConnInfo[tcpConn] = connPool.Port[uid]
+	fmt.Println("[insert]", connPool.ConnInfo[tcpConn])
+	// 使用二进制编码将对象转换为字节流
+	byteData, err := utils.ObjectToBufferStream(dataControllerInfo)
+	if err != nil {
+		fmt.Println("[TO Buffer]", err)
+		return
+	}
+	// 新建一个message消息的实例
+	msgReady := instance.NewMsgPackage(network.CONTROLLER_INFO, byteData)
+	dp := instance.NewDataPackage()
+	// 封装数据
+	s, err := dp.Pack(msgReady)
+	if err != nil {
+		fmt.Println("[Pack]", err)
+		return
+	}
+	written, err := tcpConn.Write(s)
+	if err != nil {
+		fmt.Println("[Written]", err)
+		return
+	}
+	fmt.Println("[WriteData Successfully]", written)
+	// 启动监听客户端进程
+	// TODO 启动一个心跳检测装置
+	go keepAliveDevice(tcpConn, uid)
+}
 
-// 监听来自用户的请求
-func acceptUserRequest() {
-	listener, err := network.CreateTCPListener(visitAddr)
+// keepAliveDevice 心跳包检测机制
+func keepAliveDevice(tcpConn *net.TCPConn, uid int64) {
+	//
+	fmt.Println("[KeepAlive Running]..........")
+	go func(conn *net.TCPConn) {
+		var heartCount uint64
+		for {
+			if tcpConn == nil {
+				break
+			}
+			// 封装TCP心跳包包的数据
+			keepData := network.NewKeepAlive(heartCount, "ping")
+			keepDataReady, err := utils.ObjectToBufferStream(keepData)
+			heartCount++
+			if err != nil {
+				fmt.Println("[ObjectToBufferStream]", err)
+				return
+			}
+			readyMsg := instance.NewMsgPackage(network.KEEP_ALIVE, keepDataReady)
+			dp := instance.NewDataPackage()
+			readyStream, err := dp.Pack(readyMsg)
+			if err != nil {
+				fmt.Println("[Pack]", err)
+				return
+			}
+			written, err := tcpConn.Write(readyStream)
+			if err != nil {
+				fmt.Println("[write]", err)
+				tcpConn.Close()
+				tcpConn = nil
+			}
+			fmt.Println("[Write successfully]", written)
+			time.Sleep(5 * time.Second)
+		}
+		fmt.Println("[客户端关闭]", "心跳检测停止")
+		<-connPool.TaskQueue[uid]
+		fmt.Println("[客户端从工作队列出列]")
+		atomic.AddInt32(&connPool.CurrentConnNum, -1)
+	}(tcpConn)
+}
+
+// Accept 监听来自用户的请求
+func Accept() {
+	for {
+		for k, v := range connPool.ConnInfo {
+			userVisitAddr := "0.0.0.0" + strconv.Itoa(int(v))
+			go acceptUserRequest(k, userVisitAddr)
+		}
+		time.Sleep(time.Millisecond * 100)
+	}
+}
+func acceptUserRequest(natClientConn *net.TCPConn, userVisitAddr string) {
+	listener, err := network.CreateTCPListener(userVisitAddr)
+	fmt.Println("[CreateConn]", userVisitAddr)
 	if err != nil {
 		log.Println("[CreateVisitListener]" + err.Error())
 		panic(err)
@@ -88,20 +188,25 @@ func acceptUserRequest() {
 		}
 		addUserConnIntoPool(tcpConn)
 		// 向控制通道发送信息
-		sendMessageToClientController(network.NewConnection + "\n")
+		sendMessageToClientController(natClientConn, network.NewConnection)
 	}
 }
 
 // sendMessageToClientController 向客户端发送控制信息
-func sendMessageToClientController(message string) {
-	if clientConn == nil {
-		log.Println("[SendMessage]", "没有连接的客户端")
+func sendMessageToClientController(natClientConn *net.TCPConn, message string) {
+	msg := instance.NewMsgPackage(1, []byte(message))
+	dp := instance.NewDataPackage()
+	stream, err := dp.Pack(msg)
+	if err != nil {
+		fmt.Println("Send", err)
 		return
 	}
-	_, err := clientConn.Write([]byte(message))
+	written, err := natClientConn.Write(stream)
 	if err != nil {
-		log.Println("[SendMessageWrite]", err)
+		fmt.Println("[Written]", err)
+		return
 	}
+	fmt.Println("[Send Successfully.]", written)
 }
 
 // 接收客户端的请求并建立隧道
