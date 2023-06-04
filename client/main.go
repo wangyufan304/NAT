@@ -6,9 +6,11 @@ import (
 	"github.com/spf13/cobra"
 	"log"
 	"net"
+	"strings"
 )
 
 // 按照我们的开发流程，我们需要定义些许常量
+// GOOS=linux GOARCH=amd64 go build -o output_filename
 
 var rootCmd = &cobra.Command{
 	Use:   "Client [OPTIONS] COMMAND",
@@ -18,6 +20,7 @@ var rootCmd = &cobra.Command{
 		// 运行命令的处理逻辑
 	},
 }
+var clientInfo *network.ClientConnInfo
 
 func main() {
 	if err := rootCmd.Execute(); err != nil {
@@ -35,8 +38,14 @@ func main() {
 	nsi := NewControllerServiceInstance(controllerTCPConn)
 	for {
 		msg, err := nsi.ReadHeadDataFromClient()
+		if opErr, ok := err.(*net.OpError); ok {
+			if strings.Contains(opErr.Error(), "An existing connection was forcibly closed by the remote host") {
+				// 远程主机关闭连接，退出连接处理循环
+				fmt.Println("远程主机关闭连接")
+				break
+			}
+		}
 		if err != nil {
-			fmt.Println("[ReadHeadDataFromClient]", err)
 			continue
 		}
 		msg, err = nsi.ReadRealDataFromClient(msg)
@@ -49,35 +58,22 @@ func main() {
 			fmt.Println("[创建管道]")
 			go connectLocalAndTunnel()
 		}
+		if msg.GetMsgID() == network.USER_INFORMATION {
+			ci := network.NewClientConnInstance(0, 0)
+			fmt.Println("[Byte]", msg.GetMsgData())
+			if err := ci.FromBytes(msg.GetMsgData()); err != nil {
+				fmt.Println("[GetMsgData]", err)
+				continue
+			}
+			clientInfo = ci
+			fmt.Println("[ClientInfo]", ci)
+			fmt.Println("[ClientInfo]", clientInfo)
+		}
+		if msg.GetMsgID() == network.KEEP_ALIVE {
+			fmt.Println("[Heart]", string(msg.GetMsgData()))
+		}
 	}
 }
-
-//func main() {
-//	// 与服务器的控制接口建立TCP连接 使用我们工具包的函数
-//	controllerTCPConn, err := network.CreateTCPConn(controllerServerAddr)
-//	if err != nil {
-//		log.Println("[CreateTCPConn]" + controllerServerAddr + err.Error())
-//		return
-//	}
-//	log.Println("[Conn Successfully]" + controllerServerAddr)
-//	// 新建一个Reader从控制通道中进行连接
-//	reader := bufio.NewReader(controllerTCPConn)
-//	// 不断的读取从通道读取信息
-//	for {
-//		line, err := reader.ReadString('\n')
-//		if err != nil || err == io.EOF {
-//			log.Println("[Controller ReadSting]" + err.Error())
-//			break
-//		}
-//		// 接收到连接的信号
-//		if line == network.NewConnection+"\n" {
-//			// 创建连接
-//			fmt.Println("[创建管道]")
-//			go connectLocalAndTunnel()
-//		}
-//
-//	}
-//}
 
 // 连接隧道和本地服务器
 func connectLocalAndTunnel() {

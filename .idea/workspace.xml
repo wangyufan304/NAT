@@ -5,29 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f5bb7360-b6fb-44f1-acf9-99542aa1739f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/client/controller.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/corbra.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/client/globalObject.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/config/client.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/config/server.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/instance/connPool.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/instance/message.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/instance/pack.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ninterfance/imessage.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ninterfance/ipack.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/controller.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/controller_test.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/corbra.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/globalObject.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/server.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/userConn.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/worker.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/parseconfig.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/parseconfig_test.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/network/protocol.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/network/value.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/function.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/client.exe" beforeDir="false" afterPath="$PROJECT_DIR$/client/client.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/corbra.go" beforeDir="false" afterPath="$PROJECT_DIR$/client/corbra.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/client/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/controller_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/controller_test.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/server.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

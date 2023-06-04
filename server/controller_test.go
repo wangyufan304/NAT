@@ -8,7 +8,7 @@ import (
 )
 
 func TestControllerService_ReadHeadDataFromClient(t *testing.T) {
-	conn, _ := network.CreateTCPListener("127.0.0.1:8080")
+	conn, _ := network.CreateTCPListener("127.0.0.1:8085")
 	go func() {
 		for {
 			tcp, _ := conn.AcceptTCP()
@@ -26,7 +26,7 @@ func TestControllerService_ReadHeadDataFromClient(t *testing.T) {
 	}()
 	go func() {
 
-		clientConn, _ := network.CreateTCPConn("127.0.0.1:8080")
+		clientConn, _ := network.CreateTCPConn("127.0.0.1:8085")
 		nsi := NewControllerServiceInstance(clientConn)
 		for {
 			msg, err := nsi.ReadHeadDataFromClient()

@@ -30,20 +30,23 @@ type Server struct {
 	TaskQueueSize int32
 	// ProcessingMap
 	ProcessingMap map[string]*net.TCPConn
+	//
+	ListenerAndClientConn map[*net.TCPConn]*net.TCPListener
 }
 
 func initServer() {
 	serverInstance = &Server{
-		CurrentConnInfo:     make(map[*net.TCPConn]int64),
-		Mutex:               sync.RWMutex{},
-		Counter:             0,
-		TaskQueueSlice:      nil,
-		MaxTCPConnSize:      objectConfig.MaxTCPConnNum,
-		MaxConnSize:         objectConfig.MaxConnNum,
-		ExposePort:          objectConfig.ExposePort,
-		TaskQueueBufferSize: objectConfig.TaskQueueBufferSize,
-		TaskQueueSize:       objectConfig.TaskQueueNum,
-		ProcessingMap:       make(map[string]*net.TCPConn),
+		CurrentConnInfo:       make(map[*net.TCPConn]int64),
+		Mutex:                 sync.RWMutex{},
+		Counter:               0,
+		TaskQueueSlice:        nil,
+		MaxTCPConnSize:        objectConfig.MaxTCPConnNum,
+		MaxConnSize:           objectConfig.MaxConnNum,
+		ExposePort:            objectConfig.ExposePort,
+		TaskQueueBufferSize:   objectConfig.TaskQueueBufferSize,
+		TaskQueueSize:         objectConfig.TaskQueueNum,
+		ProcessingMap:         make(map[string]*net.TCPConn),
+		ListenerAndClientConn: make(map[*net.TCPConn]*net.TCPListener),
 	}
 	// 初始化队列
 	serverInstance.TaskQueueSlice = make([]*WorkerQueue, serverInstance.MaxTCPConnSize)
@@ -106,4 +109,19 @@ func (s *Server) PullConnFromTaskQueue(conn *net.TCPConn) (*net.TCPConn, error) 
 	}
 	<-s.TaskQueueSlice[uid%int64(s.TaskQueueSize)].Worker
 	return conn, nil
+}
+
+func (s *Server) GetConnPortByUID(uid int64) int {
+	return s.TaskQueueSlice[uid%(int64(s.TaskQueueSize))].GetPort()
+}
+
+func (s *Server) AddListenerAndClient(l *net.TCPListener, c *net.TCPConn) {
+	s.Mutex.Lock()
+	defer s.Mutex.Unlock()
+	s.ListenerAndClientConn[c] = l
+}
+func (s *Server) RemoveListenerAndClient(c *net.TCPConn) {
+	s.Mutex.Lock()
+	defer s.Mutex.Unlock()
+	delete(s.ListenerAndClientConn, c)
 }
