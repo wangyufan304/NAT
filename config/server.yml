@@ -1,0 +1,13 @@
+Server:
+  Name: "Server-NAT"
+  ControllerAddr: "0.0.0.0:8007"
+  TunnelAddr: "0.0.0.0:8008"
+  VisitPort:
+    - 60000
+    - 60001
+    - 60002
+    - 60003
+  TaskQueueNum: 4
+  TaskQueueBuff: 32
+  MaxTCPConnNum: 4
+  MaxConnNum: 256
