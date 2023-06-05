@@ -1,6 +1,6 @@
 # NAT 内网穿透工具
 
-<img src="D:\桌面\note\internet\NAT\images\logo.png" style="zoom:50%;" />
+<img src="./images/logo.png" style="zoom:50%;" />
 
 ![](https://img.shields.io/badge/GO-v1.20-blue)
 
