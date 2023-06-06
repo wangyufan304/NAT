@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"github.com/byteYuFan/NAT/instance"
 	"github.com/byteYuFan/NAT/network"
 	"github.com/spf13/cobra"
+	"io"
 	"log"
 	"net"
 	"os"
@@ -36,16 +38,22 @@ func main() {
 			fmt.Println(err)
 			os.Exit(1)
 		}
+		art()
+		printRelationInformation()
 		controllerTCPConn, err := network.CreateTCPConn(objectConfig.ControllerAddr)
 		if err != nil {
 			log.Println("[CreateTCPConn]" + objectConfig.ControllerAddr + err.Error())
 			return
 		}
 		log.Println("[Conn Successfully]" + objectConfig.ControllerAddr)
-		nsi := NewControllerServiceInstance(controllerTCPConn)
+		nsi := instance.NewSendAndReceiveInstance(controllerTCPConn)
 		for {
 			msg, err := nsi.ReadHeadDataFromClient()
+			if err == io.EOF {
+				break
+			}
 			if opErr, ok := err.(*net.OpError); ok {
+				fmt.Println("[err]", err)
 				if strings.Contains(opErr.Error(), "An existing connection was forcibly closed by the remote host") {
 					// 远程主机关闭连接，退出连接处理循环
 					fmt.Println("远程主机关闭连接")
@@ -53,6 +61,7 @@ func main() {
 				}
 			}
 			if err != nil {
+				fmt.Println("[err]", err)
 				continue
 			}
 			msg, err = nsi.ReadRealDataFromClient(msg)
@@ -67,50 +76,25 @@ func main() {
 			}
 			if msg.GetMsgID() == network.USER_INFORMATION {
 				ci := network.NewClientConnInstance(0, 0)
-				fmt.Println("[Byte]", msg.GetMsgData())
 				if err := ci.FromBytes(msg.GetMsgData()); err != nil {
 					fmt.Println("[GetMsgData]", err)
 					continue
 				}
 				clientInfo = ci
-				fmt.Println("[ClientInfo]", ci)
-				fmt.Println("[ClientInfo]", clientInfo)
+				fmt.Println("[ClientInfoUID]", clientInfo.UID)
+				fmt.Println("[VisitAddress]", fmt.Sprintf("%s:%d", objectConfig.PublicServerAddr, clientInfo.Port))
 			}
 			if msg.GetMsgID() == network.KEEP_ALIVE {
-				fmt.Println("[Heart]", string(msg.GetMsgData()))
+
+			}
+			if msg.GetMsgID() == network.CONNECTION_IF_FULL {
+				fmt.Println("[Receive Full]")
+				break
 			}
 		}
 	}
+	fmt.Println("[client exit......]")
 
-}
-
-// 连接隧道和本地服务器
-func connectLocalAndTunnel() {
-	local := connLocalServer()
-	tunnel := connWebServer()
-	network.SwapConnDataEachOther(local, tunnel)
-}
-
-// 连接本地web服务器
-func connLocalServer() *net.TCPConn {
-	local, err := network.CreateTCPConn(objectConfig.LocalServerAddr)
-	if err != nil {
-		log.Println("[CreateLocalServerConn]" + err.Error())
-		panic(err)
-	}
-	log.Println("[连接本地服务器成功]")
-	return local
-}
-
-// 连接web服务器隧道
-func connWebServer() *net.TCPConn {
-	tunnel, err := network.CreateTCPConn(objectConfig.TunnelServerAddr)
-	if err != nil {
-		log.Println("[CreateTunnelServerConn]" + err.Error())
-		panic(err)
-	}
-	log.Println("[连接服务器隧道成功]")
-	return tunnel
 }
 
 func init() {

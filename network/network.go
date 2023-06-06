@@ -2,7 +2,6 @@ package network
 
 import (
 	"io"
-	"log"
 	"net"
 )
 
@@ -26,7 +25,6 @@ func swapConnData(local, remote *net.TCPConn) {
 	// 将remote的数据拷贝到local里面
 	_, err := io.Copy(local, remote)
 	if err != nil {
-		log.Println("[Copy] copy failed", err.Error())
 		return
 	}
 }

@@ -30,7 +30,7 @@ type Server struct {
 	TaskQueueSize int32
 	// ProcessingMap
 	ProcessingMap map[string]*net.TCPConn
-	//
+	// ListenerAndClientConn
 	ListenerAndClientConn map[*net.TCPConn]*net.TCPListener
 }
 
@@ -124,4 +124,10 @@ func (s *Server) RemoveListenerAndClient(c *net.TCPConn) {
 	s.Mutex.Lock()
 	defer s.Mutex.Unlock()
 	delete(s.ListenerAndClientConn, c)
+}
+
+func (s *Server) GetNumOfCurrentConn() int {
+	s.Mutex.RLock()
+	s.Mutex.RUnlock()
+	return len(s.CurrentConnInfo)
 }

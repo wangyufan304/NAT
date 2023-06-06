@@ -31,6 +31,10 @@ func main() {
 			fmt.Println(err)
 			os.Exit(1)
 		}
+		art()
+		printServerRelationInformation()
+		fmt.Println("-----------------")
+
 		go createControllerChannel()
 		go ListenTaskQueue()
 		go acceptClientRequest()

@@ -1,9 +1,10 @@
 package network
 
 const (
-	NEW_CONNECTION   = 20001
-	USER_INFORMATION = 20002
-	KEEP_ALIVE       = 20003
+	NEW_CONNECTION     = 20001
+	USER_INFORMATION   = 20002
+	KEEP_ALIVE         = 20003
+	CONNECTION_IF_FULL = 2004
 )
 
 var ProtocolMap map[uint32]interface{}
@@ -14,4 +15,5 @@ func init() {
 	ProtocolMap[NEW_CONNECTION] = "NEW_CONNECTION"
 	ProtocolMap[USER_INFORMATION] = ClientConnInfo{}
 	ProtocolMap[KEEP_ALIVE] = "ping"
+	ProtocolMap[CONNECTION_IF_FULL] = "the-connection-is-full."
 }

@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/byteYuFan/NAT/instance"
 	"github.com/byteYuFan/NAT/network"
 	"log"
 	"net"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -23,8 +25,15 @@ func createControllerChannel() {
 			fmt.Println("[AcceptTCP]", err)
 			continue
 		}
+		if serverInstance.GetNumOfCurrentConn() >= int(serverInstance.MaxTCPConnSize) {
+			nsi := instance.NewSendAndReceiveInstance(tcpConn)
+			_, _ = nsi.SendDataToClient(network.CONNECTION_IF_FULL, []byte(network.ProtocolMap[network.CONNECTION_IF_FULL].(string)))
+			fmt.Println("[SendFull]")
+			continue
+		}
 		// 给客户端发送该消息
 		log.Println("[控制层接收到新的连接]", tcpConn.RemoteAddr())
+
 		// 将tcpConn加入连接池中去
 		err = serverInstance.AddClientConn(tcpConn)
 		if err != nil {
@@ -46,19 +55,19 @@ func createControllerChannel() {
 // keepAlive 心跳包检测
 func keepAlive(conn *net.TCPConn) {
 	for {
-		nsi := NewControllerServiceInstance(conn)
+		nsi := instance.NewSendAndReceiveInstance(conn)
 		_, err := nsi.SendDataToClient(network.KEEP_ALIVE, []byte("ping"))
 		if err != nil {
 			// 关闭对应的服务端连接
-			serverInstance.Mutex.Lock()
+			serverInstance.Mutex.RLock()
 			fmt.Println("[关闭用户访问端口]", serverInstance.ListenerAndClientConn[conn].Addr().String())
+			serverInstance.Mutex.RUnlock()
+			// 关闭服务端的端口
 			serverInstance.ListenerAndClientConn[conn].Close()
-			serverInstance.Mutex.Unlock()
-			serverInstance.RemoveListenerAndClient(conn)
+			serverInstance.RemoveClientConn(conn)
 			return
 		}
-		fmt.Println("[Send Heart Package successfully]")
-		time.Sleep(time.Second)
+		time.Sleep(time.Second * 3)
 	}
 }
 
@@ -89,7 +98,7 @@ func acceptUserRequest(conn *net.TCPConn) {
 		fmt.Println("[ToBytes]", err)
 		return
 	}
-	nsi := NewControllerServiceInstance(conn)
+	nsi := instance.NewSendAndReceiveInstance(conn)
 	_, err = nsi.SendDataToClient(network.USER_INFORMATION, cciStream)
 	if err != nil {
 		fmt.Println("[Send UserInfo]", err)
@@ -98,12 +107,15 @@ func acceptUserRequest(conn *net.TCPConn) {
 	fmt.Println("[SendClientInfo Successfully]")
 	// 根据uid获取到对应的ip地址
 	getPort := serverInstance.TaskQueueSlice[uid%int64(serverInstance.TaskQueueSize)].GetPort()
-	userVisitAddr := fmt.Sprintf("%s:%d", "0.0.0.0", getPort)
+	fmt.Println("[Port]", uid, getPort)
+	userVisitAddr := "0.0.0.0:" + strconv.Itoa(getPort)
 	userVisitListener, err := network.CreateTCPListener(userVisitAddr)
 	if err != nil {
 		log.Println("[CreateVisitListener]" + err.Error())
-		panic(err)
+
+		return
 	}
+	fmt.Println("[addr]", userVisitListener.Addr().String())
 	serverInstance.AddListenerAndClient(userVisitListener, conn)
 	fmt.Println("[CreateTCPListener successfully]", userVisitAddr)
 	defer fmt.Println("[关闭 successfully]", userVisitAddr)
@@ -113,7 +125,7 @@ func acceptUserRequest(conn *net.TCPConn) {
 		if opErr, ok := err.(*net.OpError); ok {
 			if strings.Contains(opErr.Error(), "use of closed network connection") {
 				// 远程主机关闭连接，退出连接处理循环
-				fmt.Println("远程主机关闭连接")
+				fmt.Println("远程客户端连接关闭")
 				return
 			}
 		}
@@ -122,7 +134,7 @@ func acceptUserRequest(conn *net.TCPConn) {
 			continue
 		}
 		userConnPoolInstacne.AddConnInfo(tcpConn)
-		nsi := NewControllerServiceInstance(conn)
+		nsi := instance.NewSendAndReceiveInstance(conn)
 		count, err := nsi.SendDataToClient(1, []byte(network.NewConnection))
 		if err != nil {
 			fmt.Println("[SendData fail]", err)
