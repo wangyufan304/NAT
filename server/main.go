@@ -33,8 +33,6 @@ func main() {
 		}
 		art()
 		printServerRelationInformation()
-		fmt.Println("-----------------")
-
 		go createControllerChannel()
 		go ListenTaskQueue()
 		go acceptClientRequest()

@@ -13,7 +13,7 @@ import (
 )
 
 // 按照我们的开发流程，我们需要定义些许常量
-// GOOS=linux GOARCH=amd64 go build -o output_filename
+// GOOS=linux GOARCH=amd64 go build -o server
 
 var rootCmd = &cobra.Command{
 	Use:   "Client [OPTIONS] COMMAND",
@@ -85,7 +85,7 @@ func main() {
 				fmt.Println("[VisitAddress]", fmt.Sprintf("%s:%d", objectConfig.PublicServerAddr, clientInfo.Port))
 			}
 			if msg.GetMsgID() == network.KEEP_ALIVE {
-
+				fmt.Println(string(msg.GetMsgData()))
 			}
 			if msg.GetMsgID() == network.CONNECTION_IF_FULL {
 				fmt.Println("[Receive Full]")

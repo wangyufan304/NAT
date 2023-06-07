@@ -32,6 +32,12 @@ type Server struct {
 	ProcessingMap map[string]*net.TCPConn
 	// ListenerAndClientConn
 	ListenerAndClientConn map[*net.TCPConn]*net.TCPListener
+	// WorkerBuffer 整体工作队列的大小
+	WorkerBuffer chan *net.TCPConn
+	// 实际处理工作的数据结构
+	ProcessWorker *Workers
+	// 端口使用情况
+	PortStatus map[int32]bool
 }
 
 func initServer() {
@@ -47,11 +53,18 @@ func initServer() {
 		TaskQueueSize:         objectConfig.TaskQueueNum,
 		ProcessingMap:         make(map[string]*net.TCPConn),
 		ListenerAndClientConn: make(map[*net.TCPConn]*net.TCPListener),
+		WorkerBuffer:          make(chan *net.TCPConn, objectConfig.MaxConnNum),
+		ProcessWorker:         NewWorkers(),
+		PortStatus:            make(map[int32]bool),
 	}
 	// 初始化队列
 	serverInstance.TaskQueueSlice = make([]*WorkerQueue, serverInstance.MaxTCPConnSize)
 	for i := 0; i < int(serverInstance.MaxTCPConnSize); i++ {
 		serverInstance.TaskQueueSlice[i] = NewWorkerQueue(serverInstance.TaskQueueBufferSize, serverInstance.ExposePort[i])
+	}
+	// 初始化端口状态
+	for i := 0; i < int(serverInstance.MaxTCPConnSize); i++ {
+		serverInstance.PortStatus[int32(serverInstance.ExposePort[i])] = false
 	}
 }
 
@@ -130,4 +143,28 @@ func (s *Server) GetNumOfCurrentConn() int {
 	s.Mutex.RLock()
 	s.Mutex.RUnlock()
 	return len(s.CurrentConnInfo)
+}
+
+func (s *Server) PortIsFull() bool {
+	s.Mutex.RLock()
+	defer s.Mutex.RUnlock()
+	for _, v := range s.PortStatus {
+		if v == false {
+			return false
+		}
+	}
+	return true
+}
+
+func (s *Server) GetPort() int32 {
+	s.Mutex.RLock()
+	defer s.Mutex.RUnlock()
+	for k, v := range s.PortStatus {
+		if v == true {
+			continue
+		} else {
+			return k
+		}
+	}
+	return -1
 }

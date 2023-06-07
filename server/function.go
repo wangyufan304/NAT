@@ -25,46 +25,21 @@ func createControllerChannel() {
 			fmt.Println("[AcceptTCP]", err)
 			continue
 		}
-		if serverInstance.GetNumOfCurrentConn() >= int(serverInstance.MaxTCPConnSize) {
-			nsi := instance.NewSendAndReceiveInstance(tcpConn)
-			_, _ = nsi.SendDataToClient(network.CONNECTION_IF_FULL, []byte(network.ProtocolMap[network.CONNECTION_IF_FULL].(string)))
-			fmt.Println("[SendFull]")
-			continue
-		}
 		// 给客户端发送该消息
 		log.Println("[控制层接收到新的连接]", tcpConn.RemoteAddr())
-
-		// 将tcpConn加入连接池中去
-		err = serverInstance.AddClientConn(tcpConn)
-		if err != nil {
-			fmt.Println("[AddClientConn]", err)
-			continue
-		}
-		log.Println("[添加client到连接池中去]")
-		// 将tcpConn加入对应的工作队列中去
-		err = serverInstance.PushConnToTaskQueue(tcpConn)
-		if err != nil {
-			fmt.Println("[PushConnToTaskQueue]", err)
-			continue
-		}
-		log.Println("[添加client到工作队列去]")
-		go keepAlive(tcpConn)
+		// 将新的连接推入工作队列中去
+		serverInstance.WorkerBuffer <- tcpConn
+		fmt.Printf("[%s] %s\n", tcpConn.RemoteAddr().String(), "已推入工作队列中。")
 	}
 }
 
 // keepAlive 心跳包检测
-func keepAlive(conn *net.TCPConn) {
+func keepAlive(conn *net.TCPConn, port int32) {
 	for {
 		nsi := instance.NewSendAndReceiveInstance(conn)
 		_, err := nsi.SendDataToClient(network.KEEP_ALIVE, []byte("ping"))
 		if err != nil {
-			// 关闭对应的服务端连接
-			serverInstance.Mutex.RLock()
-			fmt.Println("[关闭用户访问端口]", serverInstance.ListenerAndClientConn[conn].Addr().String())
-			serverInstance.Mutex.RUnlock()
-			// 关闭服务端的端口
-			serverInstance.ListenerAndClientConn[conn].Close()
-			serverInstance.RemoveClientConn(conn)
+			serverInstance.ProcessWorker.Remove(port)
 			return
 		}
 		time.Sleep(time.Second * 3)
@@ -73,53 +48,40 @@ func keepAlive(conn *net.TCPConn) {
 
 // ListenTaskQueue 监听任务队列，获取里面的请求
 func ListenTaskQueue() {
+
 	fmt.Println("[ListenTaskQueue]", "监听工作队列传来的消息")
-	for i := 0; i < int(serverInstance.MaxTCPConnSize); i++ {
-		go func(num int) {
-			for {
-				conn := <-serverInstance.TaskQueueSlice[num].Worker
-				go acceptUserRequest(conn)
-			}
-		}(i)
+restLabel:
+	if !serverInstance.PortIsFull() {
+		conn := <-serverInstance.WorkerBuffer
+		go acceptUserRequest(conn)
 	}
+	time.Sleep(time.Millisecond * 10)
+	goto restLabel
 }
 
 // acceptUserRequest 接收用户的请求
 func acceptUserRequest(conn *net.TCPConn) {
-	// 根据用户的conn先从全局map中获取到它的uid
-	uid, err := serverInstance.GetClientUid(conn)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	cci := network.NewClientConnInstance(serverInstance.Counter, int32(serverInstance.GetConnPortByUID(uid)))
-	cciStream, err := cci.ToBytes()
-	if err != nil {
-		fmt.Println("[ToBytes]", err)
-		return
-	}
-	nsi := instance.NewSendAndReceiveInstance(conn)
-	_, err = nsi.SendDataToClient(network.USER_INFORMATION, cciStream)
-	if err != nil {
-		fmt.Println("[Send UserInfo]", err)
-		return
-	}
-	fmt.Println("[SendClientInfo Successfully]")
-	// 根据uid获取到对应的ip地址
-	getPort := serverInstance.TaskQueueSlice[uid%int64(serverInstance.TaskQueueSize)].GetPort()
-	fmt.Println("[Port]", uid, getPort)
-	userVisitAddr := "0.0.0.0:" + strconv.Itoa(getPort)
+	port := serverInstance.GetPort()
+	userVisitAddr := "0.0.0.0:" + strconv.Itoa(int(port))
 	userVisitListener, err := network.CreateTCPListener(userVisitAddr)
 	if err != nil {
 		log.Println("[CreateVisitListener]" + err.Error())
-
 		return
 	}
-	fmt.Println("[addr]", userVisitListener.Addr().String())
-	serverInstance.AddListenerAndClient(userVisitListener, conn)
-	fmt.Println("[CreateTCPListener successfully]", userVisitAddr)
-	defer fmt.Println("[关闭 successfully]", userVisitAddr)
 	defer userVisitListener.Close()
+	workerInstance := NewWorker(userVisitListener, conn, port)
+	serverInstance.ProcessWorker.Add(port, workerInstance)
+	c := network.NewClientConnInstance(serverInstance.Counter, port)
+	ready, _ := c.ToBytes()
+	nsi := instance.NewSendAndReceiveInstance(conn)
+	go keepAlive(conn, port)
+	_, err = nsi.SendDataToClient(network.USER_INFORMATION, ready)
+	if err != nil {
+		fmt.Println("[Send Client info]", err)
+		return
+	}
+	fmt.Println("[SendClientInfo Successfully]")
+	fmt.Println("[addr]", userVisitListener.Addr().String())
 	for {
 		tcpConn, err := userVisitListener.AcceptTCP()
 		if opErr, ok := err.(*net.OpError); ok {
