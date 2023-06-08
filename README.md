@@ -6,7 +6,7 @@
 
 ![](https://img.shields.io/badge/release-v0.05-green)
 
-![](https://img.shields.io/badge/auth-pogf-lightgrey)
+![](https://img.shields.io/badge/auth-yfw-lightgrey)
 
 ## 1. 如何使用
 
