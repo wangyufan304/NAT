@@ -22,12 +22,15 @@ type objectConfigData struct {
 	MaxTCPConnNum int32
 	// MaxConnNum 整个系统所能接收到的并发数量 为工作队列大小和工作队列缓冲区之积
 	MaxConnNum int32
+	// 	LogFilename string 日志文件名称
+	LogFilename string
+	// StartAuth 是否开启认证功能
+	StartAuth string
 }
 
 var objectConfig *objectConfigData
 
 func initConfig() {
-	objectConfig = &objectConfigData{}
 	// 读取配置文件内容
 	config := utils.ParseFile("server.yml")
 	viper := config.ViperInstance
@@ -39,6 +42,8 @@ func initConfig() {
 	viper.SetDefault("Server.TaskQueueBuff", 32)
 	viper.SetDefault("Server.MaxTCPConnNum", 4)
 	viper.SetDefault("Server.MaxConnNum", 128)
+	viper.SetDefault("Server.LogFilename", "server.log")
+	viper.SetDefault("Server.StartAuth", true)
 	// 读取配置值并存入 objectConfig
 	objectConfig.Name = viper.GetString("Server.Name")
 	objectConfig.ControllerAddr = viper.GetString("Server.ControllerAddr")
@@ -48,4 +53,6 @@ func initConfig() {
 	objectConfig.MaxTCPConnNum = viper.GetInt32("Server.MaxTCPConnNum")
 	objectConfig.TaskQueueBufferSize = viper.GetInt32("Server.TaskQueueBuff")
 	objectConfig.MaxConnNum = viper.GetInt32("Server.MaxConnNum")
+	objectConfig.LogFilename = viper.GetString("Server.LogFilename")
+	objectConfig.StartAuth = viper.GetString("Server.StartAuth")
 }

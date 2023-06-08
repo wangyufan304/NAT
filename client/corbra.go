@@ -9,6 +9,8 @@ func initCobra() {
 	rootCmd.Flags().StringVarP(&object.TunnelServerAddr, "tunnel-server-addr", "t", "", "The address of the tunnel server used to connect the local and public networks")
 	rootCmd.Flags().StringVarP(&object.ControllerAddr, "controller-addr", "c", "", "The address of the controller channel used to send controller messages to the client")
 	rootCmd.Flags().StringVarP(&object.PublicServerAddr, "public-server-addr", "s", "", "The address of the public server used for accessing the inner web server")
+	rootCmd.Flags().StringVarP(&object.UserName, "username", "u", "", "the name for auth the server.")
+	rootCmd.Flags().StringVarP(&object.Password, "password", "P", "", "the password for auth the server.")
 
 	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
 		if object.Name != "" {
@@ -25,6 +27,12 @@ func initCobra() {
 		}
 		if object.LocalServerAddr != "" {
 			objectConfig.LocalServerAddr = object.LocalServerAddr
+		}
+		if object.UserName != "" {
+			objectConfig.UserName = object.UserName
+		}
+		if object.Password != "" {
+			objectConfig.Password = object.Password
 		}
 		return nil
 	}

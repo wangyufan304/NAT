@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/byteYuFan/NAT/instance"
 	"github.com/byteYuFan/NAT/network"
 	"log"
 	"net"
@@ -33,4 +34,20 @@ func connWebServer() *net.TCPConn {
 	}
 	log.Println("[连接服务器隧道成功]")
 	return tunnel
+}
+
+// 向服务器发送认证消息
+func authTheServer(conn *net.TCPConn) error {
+	// 新建一个数据结构体
+	ui := network.NewUserInfoInstance(objectConfig.UserName, objectConfig.Password)
+	byteStream, err := ui.ToBytes()
+	if err != nil {
+		return err
+	}
+	nsi := instance.NewSendAndReceiveInstance(conn)
+	_, err = nsi.SendDataToClient(network.USER_REQUEST_AUTH, byteStream)
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -1,37 +1,22 @@
 package main
 
 import (
-	"fmt"
-	"github.com/spf13/cobra"
+	"github.com/sirupsen/logrus"
 	"os"
 )
 
 // 这个版本只实现最基本的NAT穿透，即就是最简单的转发
 // 流程大概如下
-
-var rootCmd = &cobra.Command{
-	Use:   "Server-NAT [OPTIONS] COMMAND",
-	Short: "Intranet penetration",
-	Long:  "GO language-based Intranet penetration tool that supports multiple connections",
-	Run: func(cmd *cobra.Command, args []string) {
-		// 运行命令的处理逻辑
-	},
-}
+var log = logrus.New()
 
 func main() {
 	if len(os.Args) > 1 && (os.Args[1] == "-h" || os.Args[1] == "--help") {
 		// 只打印帮助信息，不执行命令
-		rootCmd.SetArgs(os.Args[1:])
-		if err := rootCmd.Execute(); err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
+		Execute()
 	} else {
-		if err := rootCmd.Execute(); err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
+		Execute()
 		art()
+		exchange()
 		printServerRelationInformation()
 		go createControllerChannel()
 		go ListenTaskQueue()
@@ -43,8 +28,10 @@ func main() {
 }
 
 func init() {
+	objectConfig = new(objectConfigData)
 	initConfig()
 	initCobra()
+	initLog()
 	initServer()
 	initUserConnPool()
 }

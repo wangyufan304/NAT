@@ -4,3 +4,6 @@ Client:
   TunnelServerAddr: "pogf.com.cn:8008"
   ControllerAddr: "pogf.com.cn:8080"
   LocalServerAddr: "127.0.0.1:8080"
+Auth:
+  Username: "admin"
+  Password: "123456"

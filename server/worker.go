@@ -5,14 +5,6 @@ import (
 	"sync"
 )
 
-// WorkerQueue 工作队列
-type WorkerQueue struct {
-	// Worker 工具人
-	Worker chan *net.TCPConn
-	// Port 与该队列绑定的服务端Port
-	Port int
-}
-
 // Worker 真正干活的工人，数量和TCP MAX有关
 type Worker struct {
 	// ClientConn 客户端连接
@@ -22,6 +14,7 @@ type Worker struct {
 	// Port 服务端对应端口
 	Port int32
 }
+
 type Workers struct {
 	Mutex        sync.RWMutex
 	WorkerStatus map[int32]*Worker
@@ -37,6 +30,7 @@ func NewWorkers() *Workers {
 func (workers *Workers) Add(port int32, w *Worker) {
 	workers.Mutex.Lock()
 	defer workers.Mutex.Unlock()
+	serverInstance.Counter++
 	workers.WorkerStatus[port] = w
 	serverInstance.PortStatus[port] = true
 }
@@ -59,16 +53,4 @@ func NewWorker(l *net.TCPListener, c *net.TCPConn, port int32) *Worker {
 		ServerListener: l,
 		Port:           port,
 	}
-}
-
-// NewWorkerQueue 新建一个工作队列
-func NewWorkerQueue(bufferSize int32, port int) *WorkerQueue {
-	return &WorkerQueue{
-		Worker: make(chan *net.TCPConn, bufferSize),
-		Port:   port,
-	}
-}
-
-func (wq *WorkerQueue) GetPort() int {
-	return wq.Port
 }

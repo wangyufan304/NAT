@@ -5,12 +5,29 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f5bb7360-b6fb-44f1-acf9-99542aa1739f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/instance/request.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/network/aes.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/network/aes_test.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/network/controller.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/network/controller_test.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/network/relation.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/network/relation_test.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/info.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/log.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/root.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/client.exe" beforeDir="false" afterPath="$PROJECT_DIR$/client/client.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/corbra.go" beforeDir="false" afterPath="$PROJECT_DIR$/client/corbra.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/function.go" beforeDir="false" afterPath="$PROJECT_DIR$/client/function.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/globalObject.go" beforeDir="false" afterPath="$PROJECT_DIR$/client/globalObject.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/client/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/ART.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/ART.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/client.yml" beforeDir="false" afterPath="$PROJECT_DIR$/config/client.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/server.yml" beforeDir="false" afterPath="$PROJECT_DIR$/config/server.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/network/value.go" beforeDir="false" afterPath="$PROJECT_DIR$/network/value.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/corbra.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/corbra.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/function.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/function.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/globalObject.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/globalObject.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/server" beforeDir="false" afterPath="$PROJECT_DIR$/server/server" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/server.go" afterDir="false" />
@@ -34,6 +51,11 @@
   </component>
   <component name="GoLibraries">
     <option name="indexEntireGoPath" value="true" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://E:/GO/src/database/sql/sql.go" root0="SKIP_INSPECTION" />
+    <setting file="file://E:/GO/src/testing/testing.go" root0="SKIP_INSPECTION" />
+    <setting file="file://E:/GO/src/time/time.go" root0="SKIP_INSPECTION" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -71,32 +93,78 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\goworkplace\src\github.com\byteYuFan\NAT\server" />
       <recent name="D:\goworkplace\src\github.com\byteYuFan\NAT\instance" />
     </key>
   </component>
-  <component name="RunManager" selected="Go Build.go build github.com/byteYuFan/NAT/client">
-    <configuration name="go build github.com/byteYuFan/NAT/client" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Go Test.TestControllerUserInfo_CheckUser in github.com/byteYuFan/NAT/network">
+    <configuration name="TestControllerUserInfo_CheckUser in github.com/byteYuFan/NAT/network" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="NAT" />
-      <working_directory value="$PROJECT_DIR$" />
+      <working_directory value="$PROJECT_DIR$/network" />
+      <root_directory value="$PROJECT_DIR$" />
       <kind value="PACKAGE" />
-      <package value="github.com/byteYuFan/NAT/client" />
+      <package value="github.com/byteYuFan/NAT/network" />
       <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$/client/main.go" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <pattern value="^\QTestControllerUserInfo_CheckUser\E$" />
       <method v="2" />
     </configuration>
-    <configuration name="go build github.com/byteYuFan/NAT/server" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+    <configuration name="TestControllerUserInfo_SetExpireTime in github.com/byteYuFan/NAT/network" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="NAT" />
-      <working_directory value="$PROJECT_DIR$" />
+      <working_directory value="$PROJECT_DIR$/network" />
+      <root_directory value="$PROJECT_DIR$" />
       <kind value="PACKAGE" />
-      <package value="github.com/byteYuFan/NAT/server" />
+      <package value="github.com/byteYuFan/NAT/network" />
       <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$/server/main.go" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <pattern value="^\QTestControllerUserInfo_SetExpireTime\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestEncryptData in github.com/byteYuFan/NAT/network" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="NAT" />
+      <working_directory value="$PROJECT_DIR$/network" />
+      <root_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="github.com/byteYuFan/NAT/network" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <pattern value="^\QTestEncryptData\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestNewControllerUserInfo in github.com/byteYuFan/NAT/network" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="NAT" />
+      <working_directory value="$PROJECT_DIR$/network" />
+      <root_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="github.com/byteYuFan/NAT/network" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <pattern value="^\QTestNewControllerUserInfo\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestNewUserInfoInstance in github.com/byteYuFan/NAT/network" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="NAT" />
+      <working_directory value="$PROJECT_DIR$/network" />
+      <root_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="github.com/byteYuFan/NAT/network" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <pattern value="^\QTestNewUserInfoInstance\E$" />
       <method v="2" />
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Go Build.go build github.com/byteYuFan/NAT/client" />
-        <item itemvalue="Go Build.go build github.com/byteYuFan/NAT/server" />
+        <item itemvalue="Go Test.TestControllerUserInfo_CheckUser in github.com/byteYuFan/NAT/network" />
+        <item itemvalue="Go Test.TestNewControllerUserInfo in github.com/byteYuFan/NAT/network" />
+        <item itemvalue="Go Test.TestNewUserInfoInstance in github.com/byteYuFan/NAT/network" />
+        <item itemvalue="Go Test.TestControllerUserInfo_SetExpireTime in github.com/byteYuFan/NAT/network" />
+        <item itemvalue="Go Test.TestEncryptData in github.com/byteYuFan/NAT/network" />
       </list>
     </recent_temporary>
   </component>

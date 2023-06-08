@@ -11,3 +11,5 @@ Server:
   TaskQueueBuff: 32
   MaxTCPConnNum: 4
   MaxConnNum: 256
+  LogFilename: "server.log"
+  StartAuth: true

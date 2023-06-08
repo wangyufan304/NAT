@@ -38,6 +38,7 @@ func main() {
 			fmt.Println(err)
 			os.Exit(1)
 		}
+		fmt.Println(objectConfig)
 		art()
 		printRelationInformation()
 		controllerTCPConn, err := network.CreateTCPConn(objectConfig.ControllerAddr)
@@ -46,6 +47,12 @@ func main() {
 			return
 		}
 		log.Println("[Conn Successfully]" + objectConfig.ControllerAddr)
+		err = authTheServer(controllerTCPConn)
+		if err != nil {
+			fmt.Println("[authTheServer]", err)
+			return
+		}
+		fmt.Println("[向服务器发送认证消息成功]")
 		nsi := instance.NewSendAndReceiveInstance(controllerTCPConn)
 		for {
 			msg, err := nsi.ReadHeadDataFromClient()
@@ -68,6 +75,10 @@ func main() {
 			if err != nil {
 				fmt.Println("[readReal]", msg)
 				continue
+			}
+			if msg.GetMsgID() == network.AUTH_FAIL {
+				fmt.Println("[auth  fail]", "认证失败")
+				break
 			}
 			if string(msg.GetMsgData()) == network.NewConnection {
 				//创建连接
@@ -100,4 +111,5 @@ func main() {
 func init() {
 	initConfig()
 	initCobra()
+	fmt.Println(objectConfig)
 }

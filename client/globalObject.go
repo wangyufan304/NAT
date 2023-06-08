@@ -13,6 +13,10 @@ type objectConfigData struct {
 	PublicServerAddr string
 	// ControllerAddr 服务器控制端地址
 	ControllerAddr string
+	// UserName 登录用户名
+	UserName string
+	// Password 密码
+	Password string
 }
 
 var objectConfig *objectConfigData
@@ -26,10 +30,14 @@ func initConfig() {
 	viper.SetDefault("Client.TunnelServerAddr", "pogf.com.cn:8008")
 	viper.SetDefault("Client.ControllerAddr", "pogf.com.cn:8080")
 	viper.SetDefault("Client.LocalServerAddr", "127.0.0.1:8080")
+	viper.SetDefault("Auth.Username", "")
+	viper.SetDefault("Auth.password", "")
 
 	objectConfig.Name = viper.GetString("Client.Name")
 	objectConfig.PublicServerAddr = viper.GetString("Client.PublicServerAddr")
 	objectConfig.ControllerAddr = viper.GetString("Client.ControllerAddr")
 	objectConfig.LocalServerAddr = viper.GetString("Client.LocalServerAddr")
 	objectConfig.TunnelServerAddr = viper.GetString("Client.TunnelServerAddr")
+	objectConfig.UserName = viper.GetString("Auth.Username")
+	objectConfig.Password = viper.GetString("Auth.Password")
 }
