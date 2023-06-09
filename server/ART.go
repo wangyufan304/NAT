@@ -11,4 +11,5 @@ func printServerRelationInformation() {
 	// 打印信息
 	fmt.Println("[ServerName]", objectConfig.Name)
 	fmt.Println("[MaxServerConn]", objectConfig.MaxTCPConnNum)
+	fmt.Println("[服务端开启端口]", objectConfig.ExposePort)
 }

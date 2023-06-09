@@ -36,7 +36,7 @@ func connWebServer() *net.TCPConn {
 	return tunnel
 }
 
-// 向服务器发送认证消息
+// authTheServer 向服务器发送认证消息
 func authTheServer(conn *net.TCPConn) error {
 	// 新建一个数据结构体
 	ui := network.NewUserInfoInstance(objectConfig.UserName, objectConfig.Password)

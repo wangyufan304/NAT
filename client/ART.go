@@ -11,4 +11,13 @@ func printRelationInformation() {
 	fmt.Println("[PublicAddress]", objectConfig.PublicServerAddr)
 	fmt.Println("[TunnelAddress]", objectConfig.TunnelServerAddr)
 	fmt.Println("[LocalAddress]", objectConfig.LocalServerAddr)
+	go func() {
+		for {
+			if clientInfo != nil {
+				fmt.Println("[ClientInfoUID]", clientInfo.UID)
+				fmt.Println("[VisitAddress]", fmt.Sprintf("%s:%d", objectConfig.PublicServerAddr, clientInfo.Port))
+				return
+			}
+		}
+	}()
 }

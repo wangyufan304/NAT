@@ -24,10 +24,10 @@ func createControllerChannel() {
 		fmt.Println("[createTCPListener]", err)
 		panic(err)
 	}
-	fmt.Println("[公网服务器控制端开始监听]" + objectConfig.ControllerAddr)
+	fmt.Println("[服务器控制端开始监听]" + objectConfig.ControllerAddr)
 	if objectConfig.StartAuth == "true" {
 		// 获取用户发送来的数据
-		fmt.Println("[Auth]", "服务器开启认证请求")
+		fmt.Println("[Start Auth Successfully!]", "服务器开启认证请求")
 	}
 	for {
 		tcpConn, err := controllerListener.AcceptTCP()
@@ -46,7 +46,7 @@ func createControllerChannel() {
 			}
 		}
 		// 给客户端发送该消息
-		log.Infoln("[控制层接收到新的连接]", tcpConn.RemoteAddr())
+		fmt.Println("[控制层接收到新的连接]", tcpConn.RemoteAddr())
 		// 将新的连接推入工作队列中去
 		serverInstance.WorkerBuffer <- tcpConn
 		log.Infoln("[%s] %s\n", tcpConn.RemoteAddr().String(), "已推入工作队列中。")
@@ -142,7 +142,7 @@ func acceptUserRequest(conn *net.TCPConn) {
 		}
 		userConnPoolInstacne.AddConnInfo(tcpConn)
 		nsi := instance.NewSendAndReceiveInstance(conn)
-		count, err := nsi.SendDataToClient(1, []byte(network.NewConnection))
+		count, err := nsi.SendDataToClient(network.NEW_CONNECTION, []byte(network.NewConnection))
 		if err != nil {
 			log.Errorln("[SendData fail]", err)
 			continue

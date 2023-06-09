@@ -38,22 +38,23 @@ func main() {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		fmt.Println(objectConfig)
+		exchange()
 		art()
 		printRelationInformation()
+		// 连接服务器控制接口
 		controllerTCPConn, err := network.CreateTCPConn(objectConfig.ControllerAddr)
 		if err != nil {
 			log.Println("[CreateTCPConn]" + objectConfig.ControllerAddr + err.Error())
 			return
 		}
-		log.Println("[Conn Successfully]" + objectConfig.ControllerAddr)
+		fmt.Println("[Conn Successfully]" + objectConfig.ControllerAddr)
 		err = authTheServer(controllerTCPConn)
 		if err != nil {
 			fmt.Println("[authTheServer]", err)
 			return
 		}
-		fmt.Println("[向服务器发送认证消息成功]")
 		nsi := instance.NewSendAndReceiveInstance(controllerTCPConn)
+	receiveLoop:
 		for {
 			msg, err := nsi.ReadHeadDataFromClient()
 			if err == io.EOF {
@@ -80,32 +81,25 @@ func main() {
 				fmt.Println("[auth  fail]", "认证失败")
 				break
 			}
-			if string(msg.GetMsgData()) == network.NewConnection {
-				//创建连接
-				fmt.Println("[创建管道]")
-				go connectLocalAndTunnel()
-			}
-			if msg.GetMsgID() == network.USER_INFORMATION {
-				ci := network.NewClientConnInstance(0, 0)
-				if err := ci.FromBytes(msg.GetMsgData()); err != nil {
-					fmt.Println("[GetMsgData]", err)
+			switch msg.GetMsgID() {
+			case network.NEW_CONNECTION:
+				processNewConnection(msg.GetMsgData())
+			case network.USER_INFORMATION:
+				err := processUserInfo(msg.GetMsgData())
+				if err != nil {
+					fmt.Println("[User Info]", err)
 					continue
 				}
-				clientInfo = ci
-				fmt.Println("[ClientInfoUID]", clientInfo.UID)
-				fmt.Println("[VisitAddress]", fmt.Sprintf("%s:%d", objectConfig.PublicServerAddr, clientInfo.Port))
+			case network.KEEP_ALIVE:
+				processKeepLive(msg.GetMsgData())
+			case network.CONNECTION_IF_FULL:
+				processKeepLive(msg.GetMsgData())
+				break receiveLoop
 			}
-			if msg.GetMsgID() == network.KEEP_ALIVE {
-				fmt.Println(string(msg.GetMsgData()))
-			}
-			if msg.GetMsgID() == network.CONNECTION_IF_FULL {
-				fmt.Println("[Receive Full]")
-				break
-			}
+
 		}
 	}
-	fmt.Println("[client exit......]")
-
+	fmt.Println("[客户端退出，欢迎您的使用。]", "GoodBye, Have a good time!!!")
 }
 
 func init() {

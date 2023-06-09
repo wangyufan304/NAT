@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/byteYuFan/NAT/instance"
 	"github.com/byteYuFan/NAT/network"
 	"net"
@@ -21,7 +20,6 @@ func authUser(conn *net.TCPConn) error {
 		// 获取其真实数据
 		ui := new(network.UserInfo)
 		err := ui.FromBytes(msg.GetMsgData())
-		fmt.Println("[ui]", ui)
 		if err != nil {
 			return err
 		}
