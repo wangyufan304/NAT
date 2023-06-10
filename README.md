@@ -10,7 +10,7 @@
 
 # 服务端介绍
 
-[详细文档]()
+[详细文档](./NAT-new.md)
 
 ## 1. 如何使用
 
@@ -350,4 +350,4 @@ D:\goworkplace\src>curl pogf.com.cn:60002
 [VisitAddress] pogf.com.cn:60003
 ```
 
-![](D:\goworkplace\src\github.com\byteYuFan\NAT\images\n-1.png)
+![](./imagesn-1.png)
