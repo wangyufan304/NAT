@@ -1,5 +1,7 @@
 # NAT 内网穿透工具
 
+[English](./README-EN.MD)
+
 <img src="./images/logo.png" style="zoom:50%;" />
 
 ![](https://img.shields.io/badge/GO-v1.20-blue)
@@ -10,7 +12,7 @@
 
 # 服务端介绍
 
-[详细文档]()
+[详细文档](./NAT-new.md)
 
 ## 1. 如何使用
 
