@@ -5,17 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f5bb7360-b6fb-44f1-acf9-99542aa1739f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/client/process.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/network/protocol_test.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/ART.go" beforeDir="false" afterPath="$PROJECT_DIR$/client/ART.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/client" beforeDir="false" afterPath="$PROJECT_DIR$/client/client" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/client.exe" beforeDir="false" afterPath="$PROJECT_DIR$/client/client.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/corbra.go" beforeDir="false" afterPath="$PROJECT_DIR$/client/corbra.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/function.go" beforeDir="false" afterPath="$PROJECT_DIR$/client/function.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/lclient" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/client/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/client/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/ART.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/ART.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/server.yml" beforeDir="false" afterPath="$PROJECT_DIR$/config/server.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instance/pack.go" beforeDir="false" afterPath="$PROJECT_DIR$/instance/pack.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/network/controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/network/controller.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/network/relation_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/network/relation_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/network/value.go" beforeDir="false" afterPath="$PROJECT_DIR$/network/value.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/corbra.go" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/server/function.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/function.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/globalObject.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/globalObject.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/info.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/info.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/log.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/log.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/server" beforeDir="false" afterPath="$PROJECT_DIR$/server/server" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/server.exe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/userConn.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/userConn.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,7 +89,19 @@
       <recent name="D:\goworkplace\src\github.com\byteYuFan\NAT\instance" />
     </key>
   </component>
-  <component name="RunManager" selected="Go Test.TestControllerUserInfo_CheckUser in github.com/byteYuFan/NAT/network">
+  <component name="RunManager" selected="Go Test.TestNewUserInfoInstance in github.com/byteYuFan/NAT/network (1)">
+    <configuration name="TestClientConnInfo_FromBytes in github.com/byteYuFan/NAT/network" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="NAT" />
+      <working_directory value="$PROJECT_DIR$/network" />
+      <root_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="github.com/byteYuFan/NAT/network" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <pattern value="^\QTestClientConnInfo_FromBytes\E$" />
+      <method v="2" />
+    </configuration>
     <configuration name="TestControllerUserInfo_CheckUser in github.com/byteYuFan/NAT/network" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="NAT" />
       <working_directory value="$PROJECT_DIR$/network" />
@@ -94,30 +114,6 @@
       <pattern value="^\QTestControllerUserInfo_CheckUser\E$" />
       <method v="2" />
     </configuration>
-    <configuration name="TestControllerUserInfo_SetExpireTime in github.com/byteYuFan/NAT/network" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
-      <module name="NAT" />
-      <working_directory value="$PROJECT_DIR$/network" />
-      <root_directory value="$PROJECT_DIR$" />
-      <kind value="PACKAGE" />
-      <package value="github.com/byteYuFan/NAT/network" />
-      <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$" />
-      <framework value="gotest" />
-      <pattern value="^\QTestControllerUserInfo_SetExpireTime\E$" />
-      <method v="2" />
-    </configuration>
-    <configuration name="TestEncryptData in github.com/byteYuFan/NAT/network" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
-      <module name="NAT" />
-      <working_directory value="$PROJECT_DIR$/network" />
-      <root_directory value="$PROJECT_DIR$" />
-      <kind value="PACKAGE" />
-      <package value="github.com/byteYuFan/NAT/network" />
-      <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$" />
-      <framework value="gotest" />
-      <pattern value="^\QTestEncryptData\E$" />
-      <method v="2" />
-    </configuration>
     <configuration name="TestNewControllerUserInfo in github.com/byteYuFan/NAT/network" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="NAT" />
       <working_directory value="$PROJECT_DIR$/network" />
@@ -128,6 +124,18 @@
       <filePath value="$PROJECT_DIR$" />
       <framework value="gotest" />
       <pattern value="^\QTestNewControllerUserInfo\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestNewUserInfoInstance in github.com/byteYuFan/NAT/network (1)" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="NAT" />
+      <working_directory value="$PROJECT_DIR$/network" />
+      <root_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="github.com/byteYuFan/NAT/network" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <pattern value="^\QTestNewUserInfoInstance\E$" />
       <method v="2" />
     </configuration>
     <configuration name="TestNewUserInfoInstance in github.com/byteYuFan/NAT/network" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
@@ -144,11 +152,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Go Test.TestNewUserInfoInstance in github.com/byteYuFan/NAT/network (1)" />
+        <item itemvalue="Go Test.TestClientConnInfo_FromBytes in github.com/byteYuFan/NAT/network" />
         <item itemvalue="Go Test.TestControllerUserInfo_CheckUser in github.com/byteYuFan/NAT/network" />
         <item itemvalue="Go Test.TestNewControllerUserInfo in github.com/byteYuFan/NAT/network" />
         <item itemvalue="Go Test.TestNewUserInfoInstance in github.com/byteYuFan/NAT/network" />
-        <item itemvalue="Go Test.TestControllerUserInfo_SetExpireTime in github.com/byteYuFan/NAT/network" />
-        <item itemvalue="Go Test.TestEncryptData in github.com/byteYuFan/NAT/network" />
       </list>
     </recent_temporary>
   </component>

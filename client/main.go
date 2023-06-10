@@ -93,7 +93,7 @@ func main() {
 			case network.KEEP_ALIVE:
 				processKeepLive(msg.GetMsgData())
 			case network.CONNECTION_IF_FULL:
-				processKeepLive(msg.GetMsgData())
+				processConnIsFull(msg.GetMsgData())
 				break receiveLoop
 			}
 
@@ -105,5 +105,4 @@ func main() {
 func init() {
 	initConfig()
 	initCobra()
-	fmt.Println(objectConfig)
 }

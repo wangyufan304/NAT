@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/byteYuFan/NAT/instance"
 	"github.com/byteYuFan/NAT/network"
-	"io"
 	"net"
 	"strconv"
 	"strings"
@@ -42,15 +41,15 @@ func createControllerChannel() {
 				usi := instance.NewSendAndReceiveInstance(tcpConn)
 				_, err = usi.SendDataToClient(network.AUTH_FAIL, []byte{})
 				fmt.Println("[AUTH_FAIL]", "发送认证失败消息")
+				_ = tcpConn.Close()
 				continue
 			}
 		}
 		// 给客户端发送该消息
 		fmt.Println("[控制层接收到新的连接]", tcpConn.RemoteAddr())
-		// 将新的连接推入工作队列中去
+		// 将新地连接推入工作队列中去
 		serverInstance.WorkerBuffer <- tcpConn
 		log.Infoln("[%s] %s\n", tcpConn.RemoteAddr().String(), "已推入工作队列中。")
-
 	}
 }
 
@@ -66,15 +65,10 @@ func keepAlive(conn *net.TCPConn, port int32) {
 		_, err := nsi.SendDataToClient(network.KEEP_ALIVE, []byte("ping"))
 		log.Infoln("SendData [ping] Successfully.")
 		if err != nil {
-			if err == io.EOF {
-				log.Errorln("[检测到客户端关闭]", err)
-				serverInstance.ProcessWorker.Remove(port)
-				return
-			} else {
-				log.Errorln("Errors Sending keep Alive", err)
-			}
+			log.Errorln("[检测到客户端关闭]", err)
+			serverInstance.ProcessWorker.Remove(port)
 		}
-		time.Sleep(time.Second * 3)
+		time.Sleep(time.Minute)
 	}
 }
 
@@ -87,14 +81,13 @@ func keepAlive(conn *net.TCPConn, port int32) {
 // When the work queue is not full, a connection is taken from the work queue and a coroutine is started to process user requests for that connection.
 // The function polls at small intervals and continuously listens for new messages from the work queue.
 func ListenTaskQueue() {
-
 	log.Infoln("[ListenTaskQueue]", "监听工作队列传来的消息")
 restLabel:
 	if !serverInstance.PortIsFull() {
 		conn := <-serverInstance.WorkerBuffer
 		go acceptUserRequest(conn)
 	}
-	time.Sleep(time.Millisecond * 10)
+	time.Sleep(time.Millisecond * 100)
 	goto restLabel
 }
 
@@ -125,7 +118,6 @@ func acceptUserRequest(conn *net.TCPConn) {
 		log.Infoln("[Send Client info]", err)
 		return
 	}
-	log.Infoln("[SendClientInfo Successfully]")
 	log.Infoln("[addr]", userVisitListener.Addr().String())
 	for {
 		tcpConn, err := userVisitListener.AcceptTCP()
@@ -140,7 +132,7 @@ func acceptUserRequest(conn *net.TCPConn) {
 			log.Errorln("[userVisitListener.AcceptTCP]", err)
 			continue
 		}
-		userConnPoolInstacne.AddConnInfo(tcpConn)
+		userConnPoolInstance.AddConnInfo(tcpConn)
 		nsi := instance.NewSendAndReceiveInstance(conn)
 		count, err := nsi.SendDataToClient(network.NEW_CONNECTION, []byte(network.NewConnection))
 		if err != nil {
@@ -186,13 +178,13 @@ func acceptClientRequest() {
 // It swaps data between the found connection and the provided tunnel, and then removes the connection from the connection pool.
 // If no available connection is found, the function closes the provided tunnel. Finally, it releases the read lock of the user connection pool.
 func createTunnel(tunnel *net.TCPConn) {
-	userConnPoolInstacne.Mutex.RLock()
-	defer userConnPoolInstacne.Mutex.RUnlock()
+	userConnPoolInstance.Mutex.RLock()
+	defer userConnPoolInstance.Mutex.RUnlock()
 
-	for key, connMatch := range userConnPoolInstacne.UserConnectionMap {
+	for key, connMatch := range userConnPoolInstance.UserConnectionMap {
 		if connMatch.conn != nil {
 			go network.SwapConnDataEachOther(connMatch.conn, tunnel)
-			delete(userConnPoolInstacne.UserConnectionMap, key)
+			delete(userConnPoolInstance.UserConnectionMap, key)
 			return
 		}
 	}
@@ -212,14 +204,15 @@ func createTunnel(tunnel *net.TCPConn) {
 // The function performs the cleanup operation every 5 seconds.
 func cleanExpireConnPool() {
 	for {
-		userConnPoolInstacne.Mutex.Lock()
-		for key, connMatch := range userConnPoolInstacne.UserConnectionMap {
-			if time.Now().Sub(connMatch.visit) > time.Second*10 {
+		userConnPoolInstance.Mutex.Lock()
+		for key, connMatch := range userConnPoolInstance.UserConnectionMap {
+			if time.Now().Sub(connMatch.visit) > time.Second*8 {
 				_ = connMatch.conn.Close()
-				delete(userConnPoolInstacne.UserConnectionMap, key)
+				delete(userConnPoolInstance.UserConnectionMap, key)
 			}
 		}
-		userConnPoolInstacne.Mutex.Unlock()
+		log.Infoln("[cleanExpireConnPool successfully]")
+		userConnPoolInstance.Mutex.Unlock()
 		time.Sleep(5 * time.Second)
 	}
 }

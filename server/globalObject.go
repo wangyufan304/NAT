@@ -26,6 +26,16 @@ type objectConfigData struct {
 	LogFilename string
 	// StartAuth 是否开启认证功能
 	StartAuth string
+	// DB 如果开启认证功能就得从配置文件中读取相关的配置信息
+	DB DataBase
+}
+
+// DataBase 数据库相关信息
+type DataBase struct {
+	Username string
+	Password string
+	Host     string
+	DBName   string
 }
 
 var objectConfig *objectConfigData
@@ -55,4 +65,8 @@ func initConfig() {
 	objectConfig.MaxConnNum = viper.GetInt32("Server.MaxConnNum")
 	objectConfig.LogFilename = viper.GetString("Server.LogFilename")
 	objectConfig.StartAuth = viper.GetString("Server.StartAuth")
+	objectConfig.DB.Username = viper.GetString("Database.Username")
+	objectConfig.DB.Password = viper.GetString("Database.Password")
+	objectConfig.DB.Host = viper.GetString("Database.Host")
+	objectConfig.DB.DBName = viper.GetString("Database.DBName")
 }

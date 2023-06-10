@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/byteYuFan/NAT/instance"
 	"github.com/byteYuFan/NAT/network"
 	"net"
@@ -23,7 +24,8 @@ func authUser(conn *net.TCPConn) error {
 		if err != nil {
 			return err
 		}
-		cui := network.NewControllerUserInfo([]byte(network.KEY), "mysql", "root:123456@tcp(pogf.com.cn:3309)/NAT")
+		dbInfo := fmt.Sprintf("%s:%s@tcp(%s)/%s", objectConfig.DB.Username, objectConfig.DB.Password, objectConfig.DB.Host, objectConfig.DB.DBName)
+		cui := network.NewControllerUserInfo([]byte(network.KEY), "mysql", dbInfo)
 		err = cui.CheckUser(ui)
 		if err != nil {
 			return err

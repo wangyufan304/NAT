@@ -78,7 +78,7 @@ func (cui *ControllerUserInfo) CheckUser(user *UserInfo) error {
 	decryptPassword, _ := DecryptData(cui.KEY, password)
 
 	if string(decryptPassword) != user.Password {
-		return errors.New(ProtocolMap[Password_INCORRET].(string))
+		return errors.New(ProtocolMap[PASSWORD_INCORRET].(string))
 	}
 
 	expireTimeValue, err := time.Parse("2006-01-02 15:04:05", string(expireTime))

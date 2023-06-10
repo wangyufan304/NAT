@@ -7,7 +7,7 @@ import (
 )
 
 func TestNewUserInfoInstance(t *testing.T) {
-	ui := NewUserInfoInstance("wyf", "123456")
+	ui := NewUserInfoInstance("wyfld", "yfw123456789")
 	ui.ExpireTime = time.Now()
 	d, err := ui.ToBytes()
 	if err != nil {

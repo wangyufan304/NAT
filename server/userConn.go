@@ -23,7 +23,7 @@ type userConnPool struct {
 	Mutex sync.RWMutex
 }
 
-var userConnPoolInstacne *userConnPool
+var userConnPoolInstance *userConnPool
 
 // NewUserConnPool 新建一个连接池对象
 func NewUserConnPool() *userConnPool {
@@ -46,5 +46,5 @@ func (ucp *userConnPool) AddConnInfo(conn *net.TCPConn) {
 	ucp.UserConnectionMap[strconv.FormatInt(nowTime.UnixNano(), 10)] = uci
 }
 func initUserConnPool() {
-	userConnPoolInstacne = NewUserConnPool()
+	userConnPoolInstance = NewUserConnPool()
 }
