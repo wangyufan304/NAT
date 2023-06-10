@@ -6,7 +6,7 @@
 
 ![](https://img.shields.io/badge/release-v0.05-green)
 
-![](https://img.shields.io/badge/auth-pogf-lightgrey)
+![](https://img.shields.io/badge/auth-yfw-lightgrey)
 
 ## 1. 如何使用
 
@@ -135,7 +135,7 @@ $ ./client.exe
 D:\goworkplace\src\github.com\test>curl 公网ip(8.8.8.8):60000
 {"message":"Hello, World!"}
 
-[GIN] 2023/06/05 - 13:46:24 |[97;42m 200 [0m|       912.5µs |       127.0.0.1 |[97;44m GET     [0m "/"
+[GIN] 2023/06/05 - 13:46:24 |[97;42m] 200 [0m|     912.5µs |     127.0.0.1 |[97;44m GET]  [0m] "/"
 ```
 
 
