@@ -5,25 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f5bb7360-b6fb-44f1-acf9-99542aa1739f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/network/protocol_test.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/client" beforeDir="false" afterPath="$PROJECT_DIR$/client/client" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/client.exe" beforeDir="false" afterPath="$PROJECT_DIR$/client/client.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/lclient" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/client/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/server.yml" beforeDir="false" afterPath="$PROJECT_DIR$/config/server.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instance/pack.go" beforeDir="false" afterPath="$PROJECT_DIR$/instance/pack.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/network/controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/network/controller.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/network/relation_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/network/relation_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/network/value.go" beforeDir="false" afterPath="$PROJECT_DIR$/network/value.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/corbra.go" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/server/function.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/function.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/globalObject.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/globalObject.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/info.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/info.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/log.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/log.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/server" beforeDir="false" afterPath="$PROJECT_DIR$/server/server" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/server.exe" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/userConn.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/userConn.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/worker.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/worker.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

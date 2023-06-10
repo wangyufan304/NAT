@@ -33,11 +33,16 @@ func (workers *Workers) Add(port int32, w *Worker) {
 	serverInstance.Counter++
 	workers.WorkerStatus[port] = w
 	serverInstance.PortStatus[port] = true
+	log.Infoln("successfully", port)
 }
 func (workers *Workers) Remove(port int32) {
 	workers.Mutex.Lock()
 	defer workers.Mutex.Unlock()
-	workers.WorkerStatus[port].ServerListener.Close()
+	log.Infoln("remove")
+	log.Infoln(workers.WorkerStatus)
+	if workers.WorkerStatus[port].ServerListener != nil {
+		workers.WorkerStatus[port].ServerListener.Close()
+	}
 	delete(workers.WorkerStatus, port)
 	serverInstance.PortStatus[port] = false
 }

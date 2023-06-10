@@ -67,8 +67,9 @@ func keepAlive(conn *net.TCPConn, port int32) {
 		if err != nil {
 			log.Errorln("[检测到客户端关闭]", err)
 			serverInstance.ProcessWorker.Remove(port)
+			break
 		}
-		time.Sleep(time.Minute)
+		time.Sleep(time.Second * 5)
 	}
 }
 
