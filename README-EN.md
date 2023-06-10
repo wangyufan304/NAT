@@ -1,4 +1,5 @@
 # NAT Intranet Penetration Tool
+[中文](./README.md)
 
 <img src="./images/logo.png" style="zoom:50%;" />
 
