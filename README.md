@@ -1,6 +1,6 @@
 # NAT 内网穿透工具
 
-[English](./README-EN.MD)
+[English](./README-EN.md)
 
 <img src="./images/logo.png" style="zoom:50%;" />
 
