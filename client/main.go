@@ -98,8 +98,9 @@ func main() {
 			}
 
 		}
+		fmt.Println("[客户端退出，欢迎您的使用。]", "GoodBye, Have a good time!!!")
 	}
-	fmt.Println("[客户端退出，欢迎您的使用。]", "GoodBye, Have a good time!!!")
+
 }
 
 func init() {
