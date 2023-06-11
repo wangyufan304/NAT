@@ -8,17 +8,23 @@ import (
 
 func TestNewControllerUserInfo(t *testing.T) {
 	cui := NewControllerUserInfo([]byte("WYFFYWYYTT123456"), "mysql", "root:123456@tcp(pogf.com.cn:3309)/NAT")
-	user := UserInfo{
-		UserName:   "admin",
-		Password:   "123456",
-		ExpireTime: time.Now().Add(time.Hour * 1314521),
+	var num int64 = 3210562001
+
+	for i := 0; i < 50; i++ {
+		user := UserInfo{
+			UserName:   fmt.Sprintf("%d", num),
+			Password:   fmt.Sprintf("%d", num),
+			ExpireTime: time.Now().Add(time.Hour * 1314521),
+		}
+		id, err := cui.Add(&user)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		fmt.Println(id)
+		num += 1
 	}
-	id, err := cui.Add(&user)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(id)
+
 }
 
 func TestControllerUserInfo_CheckUser(t *testing.T) {

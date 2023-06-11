@@ -69,7 +69,7 @@ func keepAlive(conn *net.TCPConn, port int32) {
 			serverInstance.ProcessWorker.Remove(port)
 			break
 		}
-		time.Sleep(time.Second * 5)
+		time.Sleep(time.Second * 3)
 	}
 }
 

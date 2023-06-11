@@ -18,11 +18,10 @@ func main() {
 		art()
 		exchange()
 		printServerRelationInformation()
-		go createControllerChannel()
 		go ListenTaskQueue()
-		go acceptClientRequest()
+		// go acceptClientRequest()
 		go cleanExpireConnPool()
-		select {}
+		createControllerChannel()
 	}
 
 }
