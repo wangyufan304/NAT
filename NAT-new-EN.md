@@ -1918,3 +1918,4 @@ func init() {
 
 ```
 ## 6.Convey thanks
+In the process of writing this small plug-in, encountered a lot of difficulties, fortunately gradually solved these problems, in which, I consulted a lot of people, but also inquire a lot of information, thank them, but also thank friends for my help and encouragement, but also thank them for giving me confidence.
