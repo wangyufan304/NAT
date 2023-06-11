@@ -1,4 +1,5 @@
 # NAT Intranet Penetration Tool
+[中文](./README.md)
 
 <img src="./images/logo.png" style="zoom:50%;" />
 
@@ -10,7 +11,7 @@
 
 # Server introduction
 
-[详细文档](./NAT-new-EN.MD)
+[详细文档](https://github.com/byteYuFan/NAT/blob/master/NAT-new-EN.md)
 
 ## 1. How to use
 

@@ -1,6 +1,6 @@
 # NAT 内网穿透工具
 
-[English](./README-EN.MD)
+[English](./README-EN.md)
 
 <img src="./images/logo.png" style="zoom:50%;" />
 
@@ -352,4 +352,4 @@ D:\goworkplace\src>curl pogf.com.cn:60002
 [VisitAddress] pogf.com.cn:60003
 ```
 
-![](./imagesn-1.png)
+![](./images/n-1.png)
