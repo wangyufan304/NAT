@@ -5,7 +5,7 @@
 
 ![](https://img.shields.io/badge/GO-v1.20-blue)
 
-![](https://img.shields.io/badge/release-v0.1.2-green)
+![](https://img.shields.io/badge/release-v1.0.0-green)
 
 ![](https://img.shields.io/badge/auth-yyffww-lightgrey)
 
