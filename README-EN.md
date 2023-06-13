@@ -11,7 +11,7 @@
 
 # Server introduction
 
-[详细文档](https://github.com/byteYuFan/NAT/blob/master/NAT-new-EN.md)
+[Detailed Documentation](https://github.com/byteYuFan/NAT/blob/master/NAT-new-EN.md)
 
 ## 1. How to use
 
