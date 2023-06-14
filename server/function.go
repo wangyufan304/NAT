@@ -67,7 +67,7 @@ func keepAlive(conn *net.TCPConn, port int32) {
 		if err != nil {
 			log.Errorln("[检测到客户端关闭]", err)
 			serverInstance.ProcessWorker.Remove(port)
-			serverInstance.RemoveConnPort(conn)
+			//serverInstance.RemoveConnPort(conn)
 			break
 		}
 		time.Sleep(time.Second * 3)
@@ -109,9 +109,9 @@ func acceptUserRequest(conn *net.TCPConn) {
 	}
 	defer userVisitListener.Close()
 	workerInstance := NewWorker(userVisitListener, conn, port)
-	serverInstance.AddConnPort(conn, port)
 	serverInstance.ProcessWorker.Add(port, workerInstance)
 	c := network.NewClientConnInstance(serverInstance.Counter, port)
+	serverInstance.AddConnPort(serverInstance.Counter, port)
 	ready, _ := c.ToBytes()
 	nsi := instance.NewSendAndReceiveInstance(conn)
 	go keepAlive(conn, port)
@@ -121,7 +121,7 @@ func acceptUserRequest(conn *net.TCPConn) {
 		myLogger.Error("[Send Client info]" + err.Error())
 		return
 	}
-	go cleanExpireConnPool(conn)
+	go cleanExpireConnPool(conn, port)
 	myLogger.Info("[addr]" + userVisitListener.Addr().String())
 	for {
 		tcpConn, err := userVisitListener.AcceptTCP()
@@ -168,8 +168,19 @@ func acceptClientRequest() {
 			myLogger.Error("[TunnelAccept]" + err.Error())
 			continue
 		}
-		// 创建隧道
-		go createTunnel(tcpConn)
+		// 获取用户发送过来的uid并进行建立
+		nsi := instance.NewSendAndReceiveInstance(tcpConn)
+		msg, err := nsi.ReadHeadDataFromClient()
+		if err != nil {
+			continue
+		}
+		msg, _ = nsi.ReadRealDataFromClient(msg)
+		if msg.GetMsgID() == network.USER_INFORMATION {
+			info := new(network.ClientConnInfo)
+			info.FromBytes(msg.GetMsgData())
+			go createTunnel(tcpConn, info.UID, info.Port)
+		}
+
 	}
 }
 
@@ -182,10 +193,9 @@ func acceptClientRequest() {
 // Then it iterates through each connection in the user connection pool to find an available connection.
 // It swaps data between the found connection and the provided tunnel, and then removes the connection from the connection pool.
 // If no available connection is found, the function closes the provided tunnel. Finally, it releases the read lock of the user connection pool.
-func createTunnel(tunnel *net.TCPConn) {
-
+func createTunnel(tunnel *net.TCPConn, uid int64, port int32) {
 	// 获取tunnel对应的工作列表实体
-	u := serverInstance.ProcessWorker.WorkerStatus[serverInstance.GetPortByConn(tunnel)].TheUserConnPool
+	u := serverInstance.ProcessWorker.WorkerStatus[port].TheUserConnPool
 	u.Mutex.RLock()
 	defer u.Mutex.RUnlock()
 	for key, connMatch := range u.UserConnectionMap {
@@ -209,8 +219,8 @@ func createTunnel(tunnel *net.TCPConn) {
 // If the time elapsed since the last visit of a connection exceeds 10 seconds, the connection is closed and removed from the connection pool.
 // After the iteration is complete, the mutex lock of the connection pool is released.
 // The function performs the cleanup operation every 5 seconds.
-func cleanExpireConnPool(conn *net.TCPConn) {
-	u := serverInstance.ProcessWorker.WorkerStatus[serverInstance.GetPortByConn(conn)].TheUserConnPool
+func cleanExpireConnPool(conn *net.TCPConn, port int32) {
+	u := serverInstance.ProcessWorker.WorkerStatus[port].TheUserConnPool
 	for {
 		u.Mutex.Lock()
 		for key, connMatch := range u.UserConnectionMap {

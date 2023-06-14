@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/byteYuFan/NAT/instance"
 	"github.com/byteYuFan/NAT/network"
 	"log"
@@ -11,6 +12,14 @@ import (
 func connectLocalAndTunnel() {
 	local := connLocalServer()
 	tunnel := connWebServer()
+	nsi := instance.NewSendAndReceiveInstance(tunnel)
+	stream, err := clientInfo.ToBytes()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	nsi.SendDataToClient(network.USER_INFORMATION, stream)
+	fmt.Println("发送信息successfully")
 	network.SwapConnDataEachOther(local, tunnel)
 }
 

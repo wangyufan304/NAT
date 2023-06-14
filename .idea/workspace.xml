@@ -5,15 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f5bb7360-b6fb-44f1-acf9-99542aa1739f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/instance/log.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/server.yml" beforeDir="false" afterPath="$PROJECT_DIR$/config/server.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/ART.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/ART.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/client.exe" beforeDir="false" afterPath="$PROJECT_DIR$/client/client.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/function.go" beforeDir="false" afterPath="$PROJECT_DIR$/client/function.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/process.go" beforeDir="false" afterPath="$PROJECT_DIR$/client/process.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/function.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/function.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/globalObject.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/globalObject.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/root.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/root.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/worker.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/worker.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/server" beforeDir="false" afterPath="$PROJECT_DIR$/server/server" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/server.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

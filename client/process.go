@@ -7,6 +7,7 @@ import (
 
 func processNewConnection(data []byte) {
 	// TODO 目前从服务端发送来的信息没有进行处理，后续考虑进行处理
+	// 发送自身信息
 	go connectLocalAndTunnel()
 }
 

@@ -35,5 +35,4 @@ func init() {
 	initCobra()
 	initLog()
 	initServer()
-	initUserConnPool()
 }
