@@ -40,7 +40,7 @@ func initCobra() {
 	rootCmd.Flags().Int32VarP(&object.MaxConnNum, "max-conn-num", "x", 0, "Maximum connection number")
 	rootCmd.Flags().StringVarP(&object.LogFilename, "log-name", "l", "", "The name of the log.")
 	rootCmd.Flags().StringVarP(&object.StartAuth, "start-auth", "a", "true", "This is the method that whether the server start the auth.")
-
+	rootCmd.Flags().StringVar(&object.StartLog, "start-log", "true", "This parse depend the info which app produce is print in stdout or in file.")
 	// 打印绑定后的对象
 
 	// 将参数赋值给目标配置对象
@@ -78,6 +78,9 @@ func exchange() {
 	}
 	if object.StartAuth != "true" {
 		objectConfig.StartAuth = object.StartAuth
+	}
+	if object.StartLog != "true" {
+		objectConfig.StartLog = object.StartLog
 	}
 
 }

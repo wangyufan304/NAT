@@ -27,6 +27,8 @@ type Server struct {
 	ProcessWorker *Workers
 	// 端口使用情况
 	PortStatus map[int32]bool
+	// ConnPort
+	ConnPortMap map[*net.TCPConn]int32
 }
 
 func initServer() {
@@ -40,6 +42,7 @@ func initServer() {
 		WorkerBuffer:   make(chan *net.TCPConn, objectConfig.MaxConnNum),
 		ProcessWorker:  NewWorkers(),
 		PortStatus:     make(map[int32]bool),
+		ConnPortMap:    make(map[*net.TCPConn]int32),
 	}
 
 	// 初始化端口状态
@@ -70,4 +73,22 @@ func (s *Server) GetPort() int32 {
 		}
 	}
 	return -1
+}
+
+func (s *Server) AddConnPort(c *net.TCPConn, p int32) {
+	s.Mutex.RLock()
+	defer s.Mutex.RUnlock()
+	s.ConnPortMap[c] = p
+}
+
+func (s *Server) RemoveConnPort(c *net.TCPConn) {
+	s.Mutex.RLock()
+	defer s.Mutex.RUnlock()
+	delete(s.ConnPortMap, c)
+}
+
+func (s *Server) GetPortByConn(c *net.TCPConn) int32 {
+	s.Mutex.RLock()
+	defer s.Mutex.RUnlock()
+	return s.ConnPortMap[c]
 }

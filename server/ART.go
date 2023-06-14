@@ -1,6 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/byteYuFan/NAT/instance"
+	"os"
+	"strings"
+)
 
 func art() {
 	fmt.Println("  _   _              _______    _____   ______   _____   __      __  ______   _____  \n | \\ | |     /\\     |__   __|  / ____| |  ____| |  __ \\  \\ \\    / / |  ____| |  __ \\ \n |  \\| |    /  \\       | |    | (___   | |__    | |__) |  \\ \\  / /  | |__    | |__) |\n | . ` |   / /\\ \\      | |     \\___ \\  |  __|   |  _  /    \\ \\/ /   |  __|   |  _  / \n | |\\  |  / ____ \\     | |     ____) | | |____  | | \\ \\     \\  /    | |____  | | \\ \\ \n |_| \\_| /_/    \\_\\    |_|    |_____/  |______| |_|  \\_\\     \\/     |______| |_|  \\_\\\n                                                                                     \n                                                                                     ")
@@ -12,4 +17,12 @@ func printServerRelationInformation() {
 	fmt.Println("[ServerName]", objectConfig.Name)
 	fmt.Println("[MaxServerConn]", objectConfig.MaxTCPConnNum)
 	fmt.Println("[服务端开启端口]", objectConfig.ExposePort)
+}
+
+func initLogger() {
+	flag := false
+	if strings.ToLower(objectConfig.StartLog) == "true" {
+		flag = true
+	}
+	myLogger = instance.NewMyLogger(os.Stdout, flag, objectConfig.LogFilename)
 }

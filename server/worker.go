@@ -13,6 +13,10 @@ type Worker struct {
 	ServerListener *net.TCPListener
 	// Port 服务端对应端口
 	Port int32
+	// 该连接对应的user连接池
+	TheUserConnPool *userConnPool
+	// CurrentTransmitBytes 目前转发了多少个字节
+	CurrentTransmitBytes int64
 }
 
 type Workers struct {
@@ -33,12 +37,10 @@ func (workers *Workers) Add(port int32, w *Worker) {
 	serverInstance.Counter++
 	workers.WorkerStatus[port] = w
 	serverInstance.PortStatus[port] = true
-	log.Infoln("successfully", port)
 }
 func (workers *Workers) Remove(port int32) {
 	workers.Mutex.Lock()
 	defer workers.Mutex.Unlock()
-	log.Infoln("remove")
 	log.Infoln(workers.WorkerStatus)
 	if workers.WorkerStatus[port].ServerListener != nil {
 		workers.WorkerStatus[port].ServerListener.Close()
@@ -54,8 +56,10 @@ func (workers *Workers) Get(port int32) *Worker {
 
 func NewWorker(l *net.TCPListener, c *net.TCPConn, port int32) *Worker {
 	return &Worker{
-		ClientConn:     c,
-		ServerListener: l,
-		Port:           port,
+		ClientConn:           c,
+		ServerListener:       l,
+		Port:                 port,
+		CurrentTransmitBytes: 0,
+		TheUserConnPool:      NewUserConnPool(),
 	}
 }

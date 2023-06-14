@@ -28,6 +28,8 @@ type objectConfigData struct {
 	StartAuth string
 	// DB 如果开启认证功能就得从配置文件中读取相关的配置信息
 	DB DataBase
+	// StartLog 开启日志验证功能
+	StartLog string
 }
 
 // DataBase 数据库相关信息
@@ -54,6 +56,7 @@ func initConfig() {
 	viper.SetDefault("Server.MaxConnNum", 128)
 	viper.SetDefault("Server.LogFilename", "server.log")
 	viper.SetDefault("Server.StartAuth", true)
+	viper.SetDefault("Server.StartLog", true)
 	// 读取配置值并存入 objectConfig
 	objectConfig.Name = viper.GetString("Server.Name")
 	objectConfig.ControllerAddr = viper.GetString("Server.ControllerAddr")
@@ -65,6 +68,7 @@ func initConfig() {
 	objectConfig.MaxConnNum = viper.GetInt32("Server.MaxConnNum")
 	objectConfig.LogFilename = viper.GetString("Server.LogFilename")
 	objectConfig.StartAuth = viper.GetString("Server.StartAuth")
+	objectConfig.StartLog = viper.GetString("Server.StartLog")
 	objectConfig.DB.Username = viper.GetString("Database.Username")
 	objectConfig.DB.Password = viper.GetString("Database.Password")
 	objectConfig.DB.Host = viper.GetString("Database.Host")

@@ -13,6 +13,7 @@ Server:
   MaxConnNum: 256
   LogFilename: "server.log"
   StartAuth: true
+  StartLog: true
 Database:
   Username: "root"
   Password: "123456"
