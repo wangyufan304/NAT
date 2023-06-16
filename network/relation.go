@@ -8,6 +8,8 @@ import (
 
 // UserInfo 用户信息模块
 type UserInfo struct {
+	// UID 服务器给客户端分配的uid
+	UID int64
 	// UserName
 	UserName string
 	// Password
@@ -17,8 +19,9 @@ type UserInfo struct {
 }
 
 // NewUserInfoInstance 新建一个实体
-func NewUserInfoInstance(username, password string) *UserInfo {
+func NewUserInfoInstance(uid int64, username, password string) *UserInfo {
 	return &UserInfo{
+		UID:      uid,
 		UserName: username,
 		Password: password,
 	}
@@ -26,7 +29,9 @@ func NewUserInfoInstance(username, password string) *UserInfo {
 
 func (info *UserInfo) ToBytes() ([]byte, error) {
 	buf := new(bytes.Buffer)
-
+	if err := binary.Write(buf, binary.BigEndian, info.UID); err != nil {
+		return nil, err
+	}
 	// 将用户名长度编码到字节流中
 	userNameLen := len(info.UserName)
 	if err := binary.Write(buf, binary.BigEndian, int32(userNameLen)); err != nil {
@@ -60,6 +65,11 @@ func (info *UserInfo) ToBytes() ([]byte, error) {
 func (info *UserInfo) FromBytes(data []byte) error {
 	buf := bytes.NewReader(data)
 
+	var uid int64
+	if err := binary.Read(buf, binary.BigEndian, &uid); err != nil {
+		return err
+	}
+	info.UID = uid
 	// 从字节流中读取用户名长度
 	var userNameLen int32
 	if err := binary.Read(buf, binary.BigEndian, &userNameLen); err != nil {

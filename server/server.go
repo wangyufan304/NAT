@@ -22,7 +22,7 @@ type Server struct {
 	// ProcessingMap
 	ProcessingMap map[string]*net.TCPConn
 	// WorkerBuffer 整体工作队列的大小
-	WorkerBuffer chan *net.TCPConn
+	WorkerBuffer chan *Request
 	// 实际处理工作的数据结构
 	ProcessWorker *Workers
 	// 端口使用情况
@@ -39,7 +39,7 @@ func initServer() {
 		MaxConnSize:    objectConfig.MaxConnNum,
 		ExposePort:     objectConfig.ExposePort,
 		ProcessingMap:  make(map[string]*net.TCPConn),
-		WorkerBuffer:   make(chan *net.TCPConn, objectConfig.MaxConnNum),
+		WorkerBuffer:   make(chan *Request, objectConfig.MaxConnNum),
 		ProcessWorker:  NewWorkers(),
 		PortStatus:     make(map[int32]bool),
 		ConnPortMap:    make(map[int64]int32),
@@ -91,4 +91,16 @@ func (s *Server) GetPortByConn(uid int64) int32 {
 	s.Mutex.RLock()
 	defer s.Mutex.RUnlock()
 	return s.ConnPortMap[uid]
+}
+
+func (s *Server) GetCurrentCounter() int64 {
+	s.Mutex.RLock()
+	defer s.Mutex.RUnlock()
+	return s.Counter
+}
+
+func (s *Server) SendSingle(port int32, count int64) {
+	s.Mutex.RLock()
+	defer s.Mutex.RUnlock()
+	serverInstance.ProcessWorker.WorkerStatus[port].Single <- count
 }

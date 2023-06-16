@@ -2,7 +2,6 @@ package network
 
 import (
 	"io"
-	"log"
 	"net"
 	"sync"
 )
@@ -32,38 +31,42 @@ const (
 //}
 
 // SwapConnDataEachOther 通讯双方相互交换数据
-func SwapConnDataEachOther(local, remote *net.TCPConn) {
+func SwapConnDataEachOther(local, remote *net.TCPConn) int64 {
 	wg := sync.WaitGroup{}
 	wg.Add(2)
-
-	go swapConnData(local, remote, &wg)
-	go swapConnData(remote, local, &wg)
-
+	var count1 int64
+	var count2 int64
+	go func(count *int64) {
+		*count = swapConnData(local, remote, &wg)
+	}(&count1)
+	go func(count *int64) {
+		*count = swapConnData(remote, local, &wg)
+	}(&count2)
 	wg.Wait()
+	return count1 + count2
 }
 
 // swapConnData 这个函数是交换两个连接数据的函数
-func swapConnData(src, dst *net.TCPConn, wg *sync.WaitGroup) {
+func swapConnData(src, dst *net.TCPConn, wg *sync.WaitGroup) int64 {
 	defer wg.Done()
 
 	// 创建一个固定大小的缓冲区用于数据拷贝
 	buffer := make([]byte, 1024)
-
+	var count int64
 	for {
 		n, err := src.Read(buffer)
+		count += int64(n)
 		if err != nil {
 			if err != io.EOF {
-				log.Println("[swapConnData] Error:", err)
 			}
 			break
 		}
-
 		_, err = dst.Write(buffer[:n])
 		if err != nil {
-			log.Println("[swapConnData] Error:", err)
 			break
 		}
 	}
+	return count
 }
 
 func CreateTCPListener(addr string) (*net.TCPListener, error) {

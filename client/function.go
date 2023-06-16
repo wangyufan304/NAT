@@ -48,7 +48,7 @@ func connWebServer() *net.TCPConn {
 // authTheServer 向服务器发送认证消息
 func authTheServer(conn *net.TCPConn) error {
 	// 新建一个数据结构体
-	ui := network.NewUserInfoInstance(objectConfig.UserName, objectConfig.Password)
+	ui := network.NewUserInfoInstance(0, objectConfig.UserName, objectConfig.Password)
 	byteStream, err := ui.ToBytes()
 	if err != nil {
 		return err

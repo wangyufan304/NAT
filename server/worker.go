@@ -7,6 +7,8 @@ import (
 
 // Worker 真正干活的工人，数量和TCP MAX有关
 type Worker struct {
+	// 对应客户端的ID
+	ID int64
 	// ClientConn 客户端连接
 	ClientConn *net.TCPConn
 	// ServerListener 服务端监听端口
@@ -17,6 +19,8 @@ type Worker struct {
 	TheUserConnPool *userConnPool
 	// CurrentTransmitBytes 目前转发了多少个字节
 	CurrentTransmitBytes int64
+	// Single 信号带有8个缓冲区的buffer
+	Single chan int64
 }
 
 type Workers struct {
@@ -54,12 +58,14 @@ func (workers *Workers) Get(port int32) *Worker {
 	return workers.WorkerStatus[port]
 }
 
-func NewWorker(l *net.TCPListener, c *net.TCPConn, port int32) *Worker {
+func NewWorker(l *net.TCPListener, c *net.TCPConn, port int32, UID int64) *Worker {
 	return &Worker{
+		ID:                   UID,
 		ClientConn:           c,
 		ServerListener:       l,
 		Port:                 port,
 		CurrentTransmitBytes: 0,
 		TheUserConnPool:      NewUserConnPool(),
+		Single:               make(chan int64, 8),
 	}
 }

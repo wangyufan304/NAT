@@ -3,6 +3,8 @@ package main
 import (
 	"github.com/byteYuFan/NAT/instance"
 	"github.com/sirupsen/logrus"
+	"net/http"
+	_ "net/http/pprof"
 	"os"
 )
 
@@ -21,6 +23,9 @@ func main() {
 		exchange()
 		initLogger()
 		printServerRelationInformation()
+		go func() {
+			log.Println(http.ListenAndServe("0.0.0.0:6060", nil))
+		}()
 		go ListenTaskQueue()
 		go acceptClientRequest()
 		go createControllerChannel()
