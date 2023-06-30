@@ -26,9 +26,9 @@ func main() {
 		go func() {
 			log.Println(http.ListenAndServe("0.0.0.0:6060", nil))
 		}()
+		go createControllerChannel()
 		go ListenTaskQueue()
 		go acceptClientRequest()
-		go createControllerChannel()
 		select {}
 	}
 

@@ -39,23 +39,22 @@ func createControllerChannel() {
 		if objectConfig.StartAuth == "true" {
 			userInfo, err = authUser(tcpConn)
 			if err != nil {
-				fmt.Println(err)
 				usi := instance.NewSendAndReceiveInstance(tcpConn)
 				_, err = usi.SendDataToClient(network.AUTH_FAIL, []byte{})
-				fmt.Println("[AUTH_FAIL]", "发送认证失败消息")
+				fmt.Println("[AUTH_FAIL]", "客户端认证失败")
 				_ = tcpConn.Close()
 				continue
+			} else {
+				fmt.Println(userInfo.UserName, "已经成功连接到服务器", "[uid]", userInfo.UID)
 			}
 		}
-		// 给客户端发送该消息
-		fmt.Println("[控制层接收到新的连接]", tcpConn.RemoteAddr())
 		// 将新地连接推入工作队列中去
 		req := &Request{
 			Conn:     tcpConn,
 			Username: userInfo.UserName,
 		}
 		serverInstance.WorkerBuffer <- req
-		log.Infoln("[%s] %s\n", tcpConn.RemoteAddr().String(), "已推入工作队列中。")
+		fmt.Println("[%s] %s\n", tcpConn.RemoteAddr().String(), "已推入工作队列中。")
 	}
 }
 
@@ -84,7 +83,7 @@ func keepAlive(conn *net.TCPConn, uid int64, port int32, name string) {
 			fmt.Printf("[%d Exit And release %d  total: %d bytes]\n", uid, port, count)
 			return
 		}
-		time.Sleep(time.Second * 3)
+		time.Sleep(time.Second * 1)
 	}
 }
 
@@ -97,7 +96,7 @@ func keepAlive(conn *net.TCPConn, uid int64, port int32, name string) {
 // When the work queue is not full, a connection is taken from the work queue and a coroutine is started to process user requests for that connection.
 // The function polls at small intervals and continuously listens for new messages from the work queue.
 func ListenTaskQueue() {
-	myLogger.Info("[ListenTaskQueue] 正在监听工作队列传来的信息……")
+	fmt.Println("[ListenTaskQueue] 正在监听工作队列传来的信息……")
 restLabel:
 	if !serverInstance.PortIsFull() {
 		response := <-serverInstance.WorkerBuffer
@@ -115,6 +114,7 @@ restLabel:
 // Each time a request is received, it sends a signal to establish a channel with the internal network client.
 func acceptUserRequest(conn *net.TCPConn, username string) {
 	// 从闲置端口获取一个可用的端口号
+	fmt.Printf("正在为[%s]用户服务\n", username)
 	port := serverInstance.GetPort()
 	userVisitAddr := "0.0.0.0:" + strconv.Itoa(int(port))
 	userVisitListener, err := network.CreateTCPListener(userVisitAddr)
@@ -122,8 +122,13 @@ func acceptUserRequest(conn *net.TCPConn, username string) {
 		myLogger.Error("[CreateTCPListener]" + err.Error())
 		return
 	}
+	// 释放资源
 	defer userVisitListener.Close()
+	// 设置uid
 	uid := serverInstance.GetCurrentCounter() + 1
+	// 将用户的信息存入到ClientMap中去
+	serverInstance.AddClientInfo(uid, username, port)
+	myLogger.Info(username + "已经加入全局map信息表")
 	workerInstance := NewWorker(userVisitListener, conn, port, uid)
 	serverInstance.ProcessWorker.Add(port, workerInstance)
 	c := network.NewClientConnInstance(uid, port)
@@ -138,7 +143,7 @@ func acceptUserRequest(conn *net.TCPConn, username string) {
 		myLogger.Error("[Send Client info]" + err.Error())
 		return
 	}
-	go cleanExpireConnPool(conn, port, uid)
+	// go cleanExpireConnPool(conn, port, uid)
 	myLogger.Info("[addr]" + userVisitListener.Addr().String())
 	for {
 		tcpConn, err := userVisitListener.AcceptTCP()
@@ -158,10 +163,9 @@ func acceptUserRequest(conn *net.TCPConn, username string) {
 		nsi := instance.NewSendAndReceiveInstance(conn)
 		count, err := nsi.SendDataToClient(network.NEW_CONNECTION, []byte(network.NewConnection))
 		if err != nil {
-			myLogger.Error("[SendData fail]" + err.Error())
+			myLogger.Error("[SendNew_CONNECTION fail]" + err.Error())
 			continue
 		}
-		myLogger.Success("[SendData successfully]" + strconv.Itoa(count) + " bytes")
 	}
 }
 
@@ -173,6 +177,7 @@ func acceptUserRequest(conn *net.TCPConn, username string) {
 // The listener is closed when the function completes.
 // Then, the function enters an infinite loop to accept TCP connection requests from clients. For each incoming connection request, a new goroutine is spawned to handle the connection by creating a tunnel.
 func acceptClientRequest() {
+	// 创建一个隧道监听端口
 	tunnelListener, err := network.CreateTCPListener(objectConfig.TunnelAddr)
 	if err != nil {
 		myLogger.Error("[CreateTunnelListener]" + objectConfig.TunnelAddr + err.Error())
@@ -189,13 +194,16 @@ func acceptClientRequest() {
 		nsi := instance.NewSendAndReceiveInstance(tcpConn)
 		msg, err := nsi.ReadHeadDataFromClient()
 		if err != nil {
+			myLogger.Error(err.Error())
 			continue
 		}
 		msg, err = nsi.ReadRealDataFromClient(msg)
 		if err != nil {
+			myLogger.Error(err.Error())
 			continue
 		}
 		if msg.GetMsgID() == network.USER_INFORMATION {
+			myLogger.Info("[network.USER_INFORMATION]" + "create tunnel")
 			info := new(network.ClientConnInfo)
 			info.FromBytes(msg.GetMsgData())
 			go createTunnel(tcpConn, info.UID, info.Port)
@@ -214,10 +222,6 @@ func acceptClientRequest() {
 // It swaps data between the found connection and the provided tunnel, and then removes the connection from the connection pool.
 // If no available connection is found, the function closes the provided tunnel. Finally, it releases the read lock of the user connection pool.
 func createTunnel(tunnel *net.TCPConn, uid int64, port int32) {
-	if _, ok := serverInstance.ConnPortMap[uid]; !ok {
-		return
-	}
-	// 获取tunnel对应的工作列表实体
 	u := serverInstance.ProcessWorker.WorkerStatus[port].TheUserConnPool
 	u.Mutex.RLock()
 	defer u.Mutex.RUnlock()
@@ -233,7 +237,6 @@ func createTunnel(tunnel *net.TCPConn, uid int64, port int32) {
 			delete(u.UserConnectionMap, key)
 			return
 		}
-
 	}
 
 	_ = tunnel.Close()
@@ -256,14 +259,15 @@ func cleanExpireConnPool(conn *net.TCPConn, port int32, uid int64) {
 	u := serverInstance.ProcessWorker.WorkerStatus[port].TheUserConnPool
 	for {
 		u.Mutex.Lock()
-		for key, connMatch := range u.UserConnectionMap {
-			if time.Now().Sub(connMatch.visit) > time.Second*8 {
-				_ = connMatch.conn.Close()
-				delete(u.UserConnectionMap, key)
-			}
-		}
-		log.Infoln("[cleanExpireConnPool successfully]")
-		u.Mutex.Unlock()
+		//for key, connMatch := range u.UserConnectionMap {
+		//	if time.Now().Sub(connMatch.visit) > time.Second*8 {
+		//		_ = connMatch.conn.Close()
+		//		delete(u.UserConnectionMap, key)
+		//	}
+		//}
+		//log.Infoln("[cleanExpireConnPool successfully]")
+		//u.Mutex.Unlock()
+		fmt.Println(u.UserConnectionMap)
 		time.Sleep(5 * time.Second)
 	}
 }

@@ -53,6 +53,7 @@ func main() {
 			fmt.Println("[authTheServer]", err)
 			return
 		}
+		fmt.Println("[auth]", "发送认证消息成功。")
 		nsi := instance.NewSendAndReceiveInstance(controllerTCPConn)
 	receiveLoop:
 		for {
@@ -85,6 +86,7 @@ func main() {
 			case network.NEW_CONNECTION:
 				processNewConnection(msg.GetMsgData())
 			case network.USER_INFORMATION:
+				fmt.Println("[接收到USER_INFORMATION]")
 				err := processUserInfo(msg.GetMsgData())
 				if err != nil {
 					fmt.Println("[User Info]", err)

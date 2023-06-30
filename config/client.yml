@@ -1,9 +1,9 @@
-Client:
-  Name: "Client-NAT"
-  PublicServerAddr: "pogf.com.cn"
-  TunnelServerAddr: "pogf.com.cn:8008"
-  ControllerAddr: "pogf.com.cn:8080"
-  LocalServerAddr: "127.0.0.1:8080"
 Auth:
   Username: "3210561027"
   Password: "3210561027"
+Client:
+  Name: Client-NAT
+  PublicServerAddr: pogf.com.cn
+  TunnelServerAddr: pogf.com.cn:8008
+  ControllerAddr: pogf.com.cn:8080
+  LocalServerAddr: 0.0.0.0:8080

@@ -26,23 +26,30 @@ type Server struct {
 	// 实际处理工作的数据结构
 	ProcessWorker *Workers
 	// 端口使用情况
-	PortStatus map[int32]bool
+	PortStatus      map[int32]bool
+	PortStatusMutex sync.RWMutex
 	// ConnPort
 	ConnPortMap map[int64]int32
+	// 新增客户端信息模块
+	ClientInfoMap   map[int64]*ClientInfo
+	ClientInfoMutex sync.RWMutex
 }
 
 func initServer() {
 	serverInstance = &Server{
-		Mutex:          sync.RWMutex{},
-		Counter:        0,
-		MaxTCPConnSize: objectConfig.MaxTCPConnNum,
-		MaxConnSize:    objectConfig.MaxConnNum,
-		ExposePort:     objectConfig.ExposePort,
-		ProcessingMap:  make(map[string]*net.TCPConn),
-		WorkerBuffer:   make(chan *Request, objectConfig.MaxConnNum),
-		ProcessWorker:  NewWorkers(),
-		PortStatus:     make(map[int32]bool),
-		ConnPortMap:    make(map[int64]int32),
+		Mutex:           sync.RWMutex{},
+		Counter:         0,
+		MaxTCPConnSize:  objectConfig.MaxTCPConnNum,
+		MaxConnSize:     objectConfig.MaxConnNum,
+		ExposePort:      objectConfig.ExposePort,
+		ProcessingMap:   make(map[string]*net.TCPConn),
+		WorkerBuffer:    make(chan *Request, objectConfig.MaxConnNum),
+		ProcessWorker:   NewWorkers(),
+		PortStatus:      make(map[int32]bool),
+		PortStatusMutex: sync.RWMutex{},
+		ConnPortMap:     make(map[int64]int32),
+		ClientInfoMap:   make(map[int64]*ClientInfo),
+		ClientInfoMutex: sync.RWMutex{},
 	}
 
 	// 初始化端口状态
@@ -52,8 +59,8 @@ func initServer() {
 }
 
 func (s *Server) PortIsFull() bool {
-	s.Mutex.RLock()
-	defer s.Mutex.RUnlock()
+	s.PortStatusMutex.RLock()
+	defer s.PortStatusMutex.RUnlock()
 	for _, v := range s.PortStatus {
 		if v == false {
 			return false
@@ -63,8 +70,8 @@ func (s *Server) PortIsFull() bool {
 }
 
 func (s *Server) GetPort() int32 {
-	s.Mutex.RLock()
-	defer s.Mutex.RUnlock()
+	s.PortStatusMutex.RLock()
+	defer s.PortStatusMutex.RUnlock()
 	for k, v := range s.PortStatus {
 		if v == true {
 			continue
@@ -103,4 +110,29 @@ func (s *Server) SendSingle(port int32, count int64) {
 	s.Mutex.RLock()
 	defer s.Mutex.RUnlock()
 	serverInstance.ProcessWorker.WorkerStatus[port].Single <- count
+}
+
+// AddClientInfo 添加客户端信息
+func (s *Server) AddClientInfo(uid int64, username string, port int32) {
+	s.ClientInfoMutex.Lock()
+	defer s.ClientInfoMutex.Unlock()
+	s.ClientInfoMap[uid] = &ClientInfo{
+		UID:      uid,
+		Username: username,
+		Port:     port,
+	}
+}
+
+// RemoveClientInfo 删除客户端信息
+func (s *Server) RemoveClientInfo(uid int64) {
+	s.ClientInfoMutex.Lock()
+	defer s.ClientInfoMutex.Unlock()
+	delete(s.ClientInfoMap, uid)
+}
+
+// GetClientInfo 获取客户端信息
+func (s *Server) GetClientInfo(uid int64) *ClientInfo {
+	s.ClientInfoMutex.RLock()
+	defer s.ClientInfoMutex.RUnlock()
+	return s.ClientInfoMap[uid]
 }

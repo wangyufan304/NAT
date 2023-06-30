@@ -22,7 +22,7 @@ func processUserInfo(data []byte) error {
 
 func processKeepLive(data []byte) {
 	// TODO 目前只简简单单接收服务端发来的请求，简单的打印一下
-	fmt.Println("[receive KeepLive package]", string(data))
+	//fmt.Println("[receive KeepLive package]", string(data))
 }
 
 func processConnIsFull(data []byte) {
