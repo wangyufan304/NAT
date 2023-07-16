@@ -21,41 +21,37 @@ type Worker struct {
 	CurrentTransmitBytes int64
 	// Single 信号带有8个缓冲区的buffer
 	Single chan int64
+	mutex  sync.RWMutex
 }
 
 type Workers struct {
-	Mutex        sync.RWMutex
-	WorkerStatus map[int32]*Worker
+	Mutex      sync.RWMutex
+	WorkerInfo map[int64]*Worker
 }
 
 // NewWorkers 新建workers
 func NewWorkers() *Workers {
 	return &Workers{
-		Mutex:        sync.RWMutex{},
-		WorkerStatus: make(map[int32]*Worker),
+		Mutex:      sync.RWMutex{},
+		WorkerInfo: make(map[int64]*Worker),
 	}
 }
-func (workers *Workers) Add(port int32, w *Worker) {
+func (workers *Workers) Add(uid int64, w *Worker) {
 	workers.Mutex.Lock()
 	defer workers.Mutex.Unlock()
-	serverInstance.Counter++
-	workers.WorkerStatus[port] = w
-	serverInstance.PortStatus[port] = true
+	workers.WorkerInfo[uid] = w
 }
-func (workers *Workers) Remove(port int32) {
+
+func (workers *Workers) Remove(uid int64) {
 	workers.Mutex.Lock()
 	defer workers.Mutex.Unlock()
-	log.Infoln(workers.WorkerStatus)
-	if workers.WorkerStatus[port].ServerListener != nil {
-		workers.WorkerStatus[port].ServerListener.Close()
-	}
-	delete(workers.WorkerStatus, port)
-	serverInstance.PortStatus[port] = false
+	delete(workers.WorkerInfo, uid)
 }
-func (workers *Workers) Get(port int32) *Worker {
+
+func (workers *Workers) Get(uid int64) *Worker {
 	workers.Mutex.RLock()
 	defer workers.Mutex.RUnlock()
-	return workers.WorkerStatus[port]
+	return workers.WorkerInfo[uid]
 }
 
 func NewWorker(l *net.TCPListener, c *net.TCPConn, port int32, UID int64) *Worker {
@@ -67,5 +63,23 @@ func NewWorker(l *net.TCPListener, c *net.TCPConn, port int32, UID int64) *Worke
 		CurrentTransmitBytes: 0,
 		TheUserConnPool:      NewUserConnPool(),
 		Single:               make(chan int64, 8),
+		mutex:                sync.RWMutex{},
 	}
+}
+func (w *Worker) GetTheUserConnPool() *userConnPool {
+	w.mutex.RLock()
+	defer w.mutex.RUnlock()
+	return w.TheUserConnPool
+}
+
+func (w *Worker) GetCounter() int64 {
+	w.mutex.RLock()
+	defer w.mutex.RUnlock()
+	return w.CurrentTransmitBytes
+}
+
+func (w *Worker) AddCount(num int64) {
+	w.mutex.Lock()
+	defer w.mutex.Unlock()
+	w.CurrentTransmitBytes += num
 }

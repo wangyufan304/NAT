@@ -82,16 +82,10 @@ func (s *Server) GetPort() int32 {
 	return -1
 }
 
-func (s *Server) AddConnPort(uid int64, p int32) {
-	s.Mutex.RLock()
-	defer s.Mutex.RUnlock()
-	s.ConnPortMap[uid] = p
-}
-
-func (s *Server) RemoveConnPort(uid int64) {
-	s.Mutex.RLock()
-	defer s.Mutex.RUnlock()
-	delete(s.ConnPortMap, uid)
+func (s *Server) ModifyPortStatus(port int32, status bool) {
+	s.PortStatusMutex.Lock()
+	defer s.PortStatusMutex.Unlock()
+	s.PortStatus[port] = status
 }
 
 func (s *Server) GetPortByConn(uid int64) int32 {
@@ -106,33 +100,41 @@ func (s *Server) GetCurrentCounter() int64 {
 	return s.Counter
 }
 
-func (s *Server) SendSingle(port int32, count int64) {
+func (s *Server) SendSingle(uid int64, count int64) {
 	s.Mutex.RLock()
 	defer s.Mutex.RUnlock()
-	serverInstance.ProcessWorker.WorkerStatus[port].Single <- count
+	serverInstance.GetWorker(uid).Single <- count
 }
 
-// AddClientInfo 添加客户端信息
-func (s *Server) AddClientInfo(uid int64, username string, port int32) {
-	s.ClientInfoMutex.Lock()
-	defer s.ClientInfoMutex.Unlock()
-	s.ClientInfoMap[uid] = &ClientInfo{
-		UID:      uid,
-		Username: username,
-		Port:     port,
-	}
+// ===========================
+
+// AddWorker 添加用户连接信息
+func (s *Server) AddWorker(uid int64, l *net.TCPListener, c *net.TCPConn, port int32) {
+	s.Mutex.Lock()
+	defer s.Mutex.Unlock()
+	s.ProcessWorker.Add(uid, NewWorker(l, c, port, uid))
+	s.ModifyPortStatus(port, true)
+	s.Counter++
 }
 
-// RemoveClientInfo 删除客户端信息
-func (s *Server) RemoveClientInfo(uid int64) {
-	s.ClientInfoMutex.Lock()
-	defer s.ClientInfoMutex.Unlock()
-	delete(s.ClientInfoMap, uid)
+func (s *Server) RemoveWorker(uid int64) {
+	s.Mutex.Lock()
+	defer s.Mutex.Unlock()
+	s.ProcessWorker.Remove(uid)
 }
 
-// GetClientInfo 获取客户端信息
-func (s *Server) GetClientInfo(uid int64) *ClientInfo {
-	s.ClientInfoMutex.RLock()
-	defer s.ClientInfoMutex.RUnlock()
-	return s.ClientInfoMap[uid]
+func (s *Server) GetWorker(uid int64) *Worker {
+	s.Mutex.Lock()
+	defer s.Mutex.Unlock()
+	return s.ProcessWorker.Get(uid)
+}
+
+// 添加连接池信息
+
+func (s *Server) AddConnInfo(uid int64, conn *net.TCPConn) {
+	s.ProcessWorker.Get(uid).GetTheUserConnPool().AddConnInfo(conn)
+}
+
+func (s *Server) GetConnPool(uid int64) *userConnPool {
+	return s.ProcessWorker.Get(uid).GetTheUserConnPool()
 }

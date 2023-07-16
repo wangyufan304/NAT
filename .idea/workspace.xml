@@ -5,16 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f5bb7360-b6fb-44f1-acf9-99542aa1739f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/server/clientInfo.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/connectInfo.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/errorlog.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/server.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/client.exe" beforeDir="false" afterPath="$PROJECT_DIR$/client/client.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/client/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/process.go" beforeDir="false" afterPath="$PROJECT_DIR$/client/process.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/client.yml" beforeDir="false" afterPath="$PROJECT_DIR$/config/client.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/server.yml" beforeDir="false" afterPath="$PROJECT_DIR$/config/server.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/network/controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/network/controller.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/network/controller_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/network/controller_test.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/function.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/function.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/info.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/info.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/server" beforeDir="false" afterPath="$PROJECT_DIR$/server/server" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/server.exe" beforeDir="false" afterPath="$PROJECT_DIR$/server/server.exe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/worker.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/worker.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,6 +35,11 @@
   </component>
   <component name="GOROOT" url="file://E:/GO" />
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GoLibraries">
@@ -44,7 +54,7 @@
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="ProjectErrors" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectId" id="2Qb7e2qt09AcEzo07yB1WfhQAeK" />
   <component name="ProjectLevelVcsManager">
@@ -56,6 +66,7 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
     &quot;DefaultGoTemplateProperty&quot;: &quot;Go File&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
@@ -83,8 +94,8 @@
       <recent name="D:\goworkplace\src\github.com\byteYuFan\NAT\instance" />
     </key>
   </component>
-  <component name="RunManager" selected="Go Test.TestNewUserInfoInstance2 in github.com/byteYuFan/NAT/network">
-    <configuration name="TestNewControllerUserInfo in github.com/byteYuFan/NAT/network (1)" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Go Test.TestControllerUserInfo_CheckUser in github.com/byteYuFan/NAT/network">
+    <configuration name="TestControllerUserInfo_CheckUser in github.com/byteYuFan/NAT/network" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="NAT" />
       <working_directory value="$PROJECT_DIR$/network" />
       <root_directory value="$PROJECT_DIR$" />
@@ -93,7 +104,19 @@
       <directory value="$PROJECT_DIR$" />
       <filePath value="$PROJECT_DIR$" />
       <framework value="gotest" />
-      <pattern value="^\QTestNewControllerUserInfo\E$" />
+      <pattern value="^\QTestControllerUserInfo_CheckUser\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestControllerUserInfo_SetExpireTime in github.com/byteYuFan/NAT/network" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="NAT" />
+      <working_directory value="$PROJECT_DIR$/network" />
+      <root_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="github.com/byteYuFan/NAT/network" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <pattern value="^\QTestControllerUserInfo_SetExpireTime\E$" />
       <method v="2" />
     </configuration>
     <configuration name="TestNewControllerUserInfo in github.com/byteYuFan/NAT/network" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
@@ -108,7 +131,7 @@
       <pattern value="^\QTestNewControllerUserInfo\E$" />
       <method v="2" />
     </configuration>
-    <configuration name="TestNewUserInfoInstance in github.com/byteYuFan/NAT/network (1)" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+    <configuration name="TestNewUserInfoInstance2 in github.com/byteYuFan/NAT/network (1)" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="NAT" />
       <working_directory value="$PROJECT_DIR$/network" />
       <root_directory value="$PROJECT_DIR$" />
@@ -117,19 +140,7 @@
       <directory value="$PROJECT_DIR$" />
       <filePath value="$PROJECT_DIR$" />
       <framework value="gotest" />
-      <pattern value="^\QTestNewUserInfoInstance\E$" />
-      <method v="2" />
-    </configuration>
-    <configuration name="TestNewUserInfoInstance in github.com/byteYuFan/NAT/network" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
-      <module name="NAT" />
-      <working_directory value="$PROJECT_DIR$/network" />
-      <root_directory value="$PROJECT_DIR$" />
-      <kind value="PACKAGE" />
-      <package value="github.com/byteYuFan/NAT/network" />
-      <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$" />
-      <framework value="gotest" />
-      <pattern value="^\QTestNewUserInfoInstance\E$" />
+      <pattern value="^\QTestNewUserInfoInstance2\E$" />
       <method v="2" />
     </configuration>
     <configuration name="TestNewUserInfoInstance2 in github.com/byteYuFan/NAT/network" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
@@ -146,11 +157,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Go Test.TestControllerUserInfo_CheckUser in github.com/byteYuFan/NAT/network" />
+        <item itemvalue="Go Test.TestControllerUserInfo_SetExpireTime in github.com/byteYuFan/NAT/network" />
+        <item itemvalue="Go Test.TestNewUserInfoInstance2 in github.com/byteYuFan/NAT/network (1)" />
         <item itemvalue="Go Test.TestNewUserInfoInstance2 in github.com/byteYuFan/NAT/network" />
         <item itemvalue="Go Test.TestNewControllerUserInfo in github.com/byteYuFan/NAT/network" />
-        <item itemvalue="Go Test.TestNewUserInfoInstance in github.com/byteYuFan/NAT/network" />
-        <item itemvalue="Go Test.TestNewControllerUserInfo in github.com/byteYuFan/NAT/network (1)" />
-        <item itemvalue="Go Test.TestNewUserInfoInstance in github.com/byteYuFan/NAT/network (1)" />
       </list>
     </recent_temporary>
   </component>

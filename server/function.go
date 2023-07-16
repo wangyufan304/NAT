@@ -7,7 +7,6 @@ import (
 	"net"
 	"strconv"
 	"strings"
-	"sync/atomic"
 	"time"
 )
 
@@ -35,17 +34,22 @@ func createControllerChannel() {
 			fmt.Println("[AcceptTCP]", err)
 			continue
 		}
-		var userInfo *network.UserInfo
+		userInfo := &network.UserInfo{
+			UID:      0,
+			UserName: "admin",
+		}
 		if objectConfig.StartAuth == "true" {
 			userInfo, err = authUser(tcpConn)
 			if err != nil {
 				usi := instance.NewSendAndReceiveInstance(tcpConn)
-				_, err = usi.SendDataToClient(network.AUTH_FAIL, []byte{})
-				fmt.Println("[AUTH_FAIL]", "客户端认证失败")
+				_, _ = usi.SendDataToClient(network.AUTH_FAIL, []byte{})
+				fmt.Println("[AUTH_FAIL]", "客户端认证失败", err.Error())
 				_ = tcpConn.Close()
 				continue
 			} else {
-				fmt.Println(userInfo.UserName, "已经成功连接到服务器", "[uid]", userInfo.UID)
+				nsi := instance.NewSendAndReceiveInstance(tcpConn)
+				_, _ = nsi.SendDataToClient(network.USER_AUTHENTICATION_SUCCESSFULLY, []byte{})
+				fmt.Println(userInfo.UserName, "已经成功连接到服务器。")
 			}
 		}
 		// 将新地连接推入工作队列中去
@@ -54,7 +58,7 @@ func createControllerChannel() {
 			Username: userInfo.UserName,
 		}
 		serverInstance.WorkerBuffer <- req
-		fmt.Println("[%s] %s\n", tcpConn.RemoteAddr().String(), "已推入工作队列中。")
+		fmt.Printf("[%s]%s\n", tcpConn.RemoteAddr().String(), "已推入工作队列中。")
 	}
 }
 
@@ -64,23 +68,32 @@ func createControllerChannel() {
 // If an error occurs during the process, it checks if the error indicates that the client has closed the connection.
 // If so, it logs the appropriate message and removes the corresponding port from the worker queue.
 // The function then returns.
-func keepAlive(conn *net.TCPConn, uid int64, port int32, name string) {
+func keepAlive(conn *net.TCPConn, uid int64, name string) {
 	nsi := instance.NewSendAndReceiveInstance(conn)
 	for {
 		_, err := nsi.SendDataToClient(network.KEEP_ALIVE, []byte("ping"))
 		if err != nil {
 			log.Errorln("[检测到客户端关闭]", err)
-			count := serverInstance.ProcessWorker.WorkerStatus[port].CurrentTransmitBytes
+			w := serverInstance.GetWorker(uid)
+			if w == nil {
+				break
+			}
 			dbInfo := fmt.Sprintf("%s:%s@tcp(%s)/%s", objectConfig.DB.Username, objectConfig.DB.Password, objectConfig.DB.Host, objectConfig.DB.DBName)
 			ncb := network.NewControllerBar("mysql", dbInfo)
-			err := ncb.AddBar(name, count)
+			err := ncb.AddBar(name, w.GetCounter())
 			if err != nil {
 				myLogger.Error("写入数据库失败" + err.Error())
 			}
-			myLogger.Info("写入数据库成功")
-			serverInstance.ProcessWorker.Remove(port)
-			serverInstance.RemoveConnPort(uid)
-			fmt.Printf("[%d Exit And release %d  total: %d bytes]\n", uid, port, count)
+			//TODO 释放连接资
+			fmt.Printf("[%d Exit And release %d  total: %d bytes]\n", uid, w.Port, w.GetCounter())
+			if w.ClientConn != nil {
+				w.ClientConn.Close()
+			}
+			if w.ServerListener != nil {
+				w.ServerListener.Close()
+			}
+			serverInstance.ModifyPortStatus(w.Port, false)
+			serverInstance.RemoveWorker(uid)
 			return
 		}
 		time.Sleep(time.Second * 1)
@@ -97,9 +110,10 @@ func keepAlive(conn *net.TCPConn, uid int64, port int32, name string) {
 // The function polls at small intervals and continuously listens for new messages from the work queue.
 func ListenTaskQueue() {
 	fmt.Println("[ListenTaskQueue] 正在监听工作队列传来的信息……")
+	response := &Request{}
 restLabel:
 	if !serverInstance.PortIsFull() {
-		response := <-serverInstance.WorkerBuffer
+		response = <-serverInstance.WorkerBuffer
 		go acceptUserRequest(response.Conn, response.Username)
 	}
 	time.Sleep(time.Millisecond * 100)
@@ -124,26 +138,21 @@ func acceptUserRequest(conn *net.TCPConn, username string) {
 	}
 	// 释放资源
 	defer userVisitListener.Close()
-	// 设置uid
 	uid := serverInstance.GetCurrentCounter() + 1
-	// 将用户的信息存入到ClientMap中去
-	serverInstance.AddClientInfo(uid, username, port)
-	myLogger.Info(username + "已经加入全局map信息表")
-	workerInstance := NewWorker(userVisitListener, conn, port, uid)
-	serverInstance.ProcessWorker.Add(port, workerInstance)
+	//workerInstance := NewWorker(userVisitListener, conn, port, uid)
+	serverInstance.AddWorker(uid, userVisitListener, conn, port)
+	fmt.Println("[uid]", uid, "[port]", port)
 	c := network.NewClientConnInstance(uid, port)
-	serverInstance.AddConnPort(uid, port)
 	ready, _ := c.ToBytes()
 	nsi := instance.NewSendAndReceiveInstance(conn)
-	go keepAlive(conn, uid, port, username)
-	go writeBytes(username, port, uid)
-	_, err = nsi.SendDataToClient(network.USER_AUTHENTICATION_SUCCESSFULLY, []byte{})
+	go keepAlive(conn, uid, username)
+	go writeBytes(uid)
 	_, err = nsi.SendDataToClient(network.USER_INFORMATION, ready)
 	if err != nil {
 		myLogger.Error("[Send Client info]" + err.Error())
 		return
 	}
-	// go cleanExpireConnPool(conn, port, uid)
+	//go cleanExpireConnPool(uid)
 	myLogger.Info("[addr]" + userVisitListener.Addr().String())
 	for {
 		tcpConn, err := userVisitListener.AcceptTCP()
@@ -159,9 +168,10 @@ func acceptUserRequest(conn *net.TCPConn, username string) {
 			continue
 		}
 		//userConnPoolInstance.AddConnInfo(tcpConn)
-		workerInstance.TheUserConnPool.AddConnInfo(tcpConn)
+		//workerInstance.TheUserConnPool.AddConnInfo(tcpConn)
+		serverInstance.AddConnInfo(uid, tcpConn)
 		nsi := instance.NewSendAndReceiveInstance(conn)
-		count, err := nsi.SendDataToClient(network.NEW_CONNECTION, []byte(network.NewConnection))
+		_, err = nsi.SendDataToClient(network.NEW_CONNECTION, []byte(network.NewConnection))
 		if err != nil {
 			myLogger.Error("[SendNew_CONNECTION fail]" + err.Error())
 			continue
@@ -208,7 +218,6 @@ func acceptClientRequest() {
 			info.FromBytes(msg.GetMsgData())
 			go createTunnel(tcpConn, info.UID, info.Port)
 		}
-
 	}
 }
 
@@ -222,7 +231,8 @@ func acceptClientRequest() {
 // It swaps data between the found connection and the provided tunnel, and then removes the connection from the connection pool.
 // If no available connection is found, the function closes the provided tunnel. Finally, it releases the read lock of the user connection pool.
 func createTunnel(tunnel *net.TCPConn, uid int64, port int32) {
-	u := serverInstance.ProcessWorker.WorkerStatus[port].TheUserConnPool
+	// 获取port对应的usermap
+	u := serverInstance.GetConnPool(uid)
 	u.Mutex.RLock()
 	defer u.Mutex.RUnlock()
 	for key, connMatch := range u.UserConnectionMap {
@@ -230,9 +240,11 @@ func createTunnel(tunnel *net.TCPConn, uid int64, port int32) {
 		if connMatch.conn != nil {
 			go func(count *int64, port int32) {
 				*count = network.SwapConnDataEachOther(connMatch.conn, tunnel)
-				if _, ok := serverInstance.ConnPortMap[uid]; ok {
-					serverInstance.SendSingle(port, *count)
+				if w := serverInstance.GetWorker(uid); w != nil {
+					fmt.Printf("[%d]write data  %d", uid, *count)
+					w.Single <- *count
 				}
+
 			}(&count, port)
 			delete(u.UserConnectionMap, key)
 			return
@@ -252,38 +264,38 @@ func createTunnel(tunnel *net.TCPConn, uid int64, port int32) {
 // If the time elapsed since the last visit of a connection exceeds 10 seconds, the connection is closed and removed from the connection pool.
 // After the iteration is complete, the mutex lock of the connection pool is released.
 // The function performs the cleanup operation every 5 seconds.
-func cleanExpireConnPool(conn *net.TCPConn, port int32, uid int64) {
-	if _, ok := serverInstance.ConnPortMap[uid]; !ok {
+func cleanExpireConnPool(uid int64) {
+	u := serverInstance.GetConnPool(uid)
+	if u == nil {
 		return
 	}
-	u := serverInstance.ProcessWorker.WorkerStatus[port].TheUserConnPool
 	for {
 		u.Mutex.Lock()
-		//for key, connMatch := range u.UserConnectionMap {
-		//	if time.Now().Sub(connMatch.visit) > time.Second*8 {
-		//		_ = connMatch.conn.Close()
-		//		delete(u.UserConnectionMap, key)
-		//	}
-		//}
-		//log.Infoln("[cleanExpireConnPool successfully]")
-		//u.Mutex.Unlock()
-		fmt.Println(u.UserConnectionMap)
+		for key, connMatch := range u.UserConnectionMap {
+			if time.Now().Sub(connMatch.visit) > time.Second*8 {
+				_ = connMatch.conn.Close()
+				delete(u.UserConnectionMap, key)
+			}
+		}
+		log.Infoln("[cleanExpireConnPool successfully]")
+		u.Mutex.Unlock()
 		time.Sleep(5 * time.Second)
 	}
 }
 
 // 将count写入到数据库中去
 
-func writeBytes(name string, port int32, uid int64) {
+func writeBytes(uid int64) {
 	fmt.Println("[writeByte Starting... Successfully.]")
 	for {
-		if _, ok := serverInstance.ConnPortMap[uid]; !ok {
-			fmt.Println("[ConnPort] 没有该uid")
+		w := serverInstance.GetWorker(uid)
+		if w == nil {
 			break
 		}
 		select {
-		case count := <-serverInstance.ProcessWorker.WorkerStatus[port].Single:
-			atomic.AddInt64(&serverInstance.ProcessWorker.WorkerStatus[port].CurrentTransmitBytes, count)
+		case count := <-w.Single:
+			fmt.Println("writeBytes successfully", count)
+			w.AddCount(count)
 		}
 	}
 }

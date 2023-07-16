@@ -1,6 +1,6 @@
 Server:
   Name: "Server-NAT"
-  ControllerAddr: "0.0.0.0:8007"
+  ControllerAddr: "0.0.0.0:8080"
   TunnelAddr: "0.0.0.0:8008"
   VisitPort:
     - 60000
@@ -17,5 +17,5 @@ Server:
 Database:
   Username: "root"
   Password: "123456"
-  Host: "127.0.0.1:3309"
-  DBName: "NAT"
+  Host: "pogf.com.cn:3309"
+  DBName: "python"

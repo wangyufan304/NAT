@@ -1,0 +1,110 @@
+INFO: 2023/07/03 14:48:41 [addr][::]:60003
+INFO: 2023/07/03 14:49:43 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 14:49:44 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 14:49:44 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 14:49:44 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 14:50:50 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 14:50:50 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 14:50:51 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 14:50:58 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 14:51:01 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 14:51:10 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 14:51:11 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 14:51:30 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 14:51:30 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 14:51:45 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 14:51:47 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 14:51:52 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 14:51:54 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 14:55:21 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 14:55:59 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 14:56:01 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 14:56:02 [network.USER_INFORMATION]create tunnel
+time="2023-07-03T14:56:16+08:00" level=error msg="[检测到客户端关闭] write tcp 127.0.0.1:8080->127.0.0.1:53711: wsasend: An existing connection was forcibly closed by the remote host."
+INFO: 2023/07/03 14:56:18 [addr][::]:60001
+INFO: 2023/07/03 14:56:38 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 14:56:38 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 14:56:38 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 14:56:38 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 14:56:38 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 14:56:38 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 15:07:59 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 15:19:15 [addr][::]:60000
+INFO: 2023/07/03 15:19:19 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 15:19:19 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 15:19:19 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 15:19:19 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/03 15:22:51 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:00:50 [addr][::]:60000
+INFO: 2023/07/04 15:01:03 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:01:03 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:01:03 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:01:03 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:01:03 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:01:03 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:02:28 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:02:28 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:02:30 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:03:02 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:03:05 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:03:06 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:03:06 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:03:07 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:03:08 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:03:09 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:03:17 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:03:28 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:03:32 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:03:45 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:03:45 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:03:47 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:03:47 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:03:48 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:04:09 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:04:10 [network.USER_INFORMATION]create tunnel
+time="2023-07-04T15:04:19+08:00" level=error msg="[检测到客户端关闭] write tcp 127.0.0.1:8080->127.0.0.1:53029: wsasend: An existing connection was forcibly closed by the remote host."
+INFO: 2023/07/04 15:04:29 [addr][::]:60000
+INFO: 2023/07/04 15:04:32 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:05:39 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:05:40 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:06:35 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:06:35 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:06:35 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:06:35 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:06:35 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:06:35 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:09:30 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:09:30 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:09:30 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:09:30 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:09:30 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:09:30 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:11:30 [addr][::]:60001
+INFO: 2023/07/04 15:11:36 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:11:36 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:11:36 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:11:36 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:11:36 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 15:11:36 [network.USER_INFORMATION]create tunnel
+time="2023-07-04T15:11:56+08:00" level=error msg="[检测到客户端关闭] write tcp 127.0.0.1:8080->127.0.0.1:54437: wsasend: An existing connection was forcibly closed by the remote host."
+INFO: 2023/07/04 15:12:01 [addr][::]:60001
+INFO: 2023/07/04 15:12:15 [network.USER_INFORMATION]create tunnel
+time="2023-07-04T16:21:35+08:00" level=error msg="[检测到客户端关闭] write tcp 127.0.0.1:8080->127.0.0.1:54472: wsasend: An existing connection was forcibly closed by the remote host."
+INFO: 2023/07/04 16:28:57 [addr][::]:60000
+INFO: 2023/07/04 16:29:05 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 16:29:05 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 16:29:05 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 16:29:05 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 16:29:05 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 16:29:05 [network.USER_INFORMATION]create tunnel
+time="2023-07-04T16:29:52+08:00" level=error msg="[检测到客户端关闭] write tcp 127.0.0.1:8080->127.0.0.1:60234: wsasend: An existing connection was forcibly closed by the remote host."
+INFO: 2023/07/04 16:29:59 [addr][::]:60000
+time="2023-07-04T16:30:29+08:00" level=error msg="[检测到客户端关闭] write tcp 127.0.0.1:8080->127.0.0.1:60270: wsasend: An existing connection was forcibly closed by the remote host."
+INFO: 2023/07/04 16:30:35 [addr][::]:60003
+INFO: 2023/07/04 16:30:42 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 16:30:42 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 16:30:42 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 16:30:42 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 16:30:42 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 16:30:42 [network.USER_INFORMATION]create tunnel
+INFO: 2023/07/04 18:04:02 [addr][::]:60000

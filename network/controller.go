@@ -3,6 +3,7 @@ package network
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"time"
 )
@@ -26,8 +27,9 @@ func NewControllerUserInfo(key []byte, dbType, dbInfo string) *ControllerUserInf
 
 // Add 插入用户信息
 func (cui *ControllerUserInfo) Add(user *UserInfo) (int64, error) {
+	defer cui.DBController.Close()
 	// Check if username already exists
-	existsQuery := "SELECT COUNT(*) FROM user_info WHERE username = ?"
+	existsQuery := "SELECT COUNT(*) FROM userInfo_userinfo WHERE username = ?"
 	var count int64
 	err := cui.DBController.QueryRow(existsQuery, user.UserName).Scan(&count)
 	if err != nil {
@@ -35,10 +37,12 @@ func (cui *ControllerUserInfo) Add(user *UserInfo) (int64, error) {
 	}
 	if count > 0 {
 		// Username already exists
+		fmt.Println("用户存在")
 		return -1, errors.New(ProtocolMap[USER_ALREADY_EXIST].(string))
 	}
-	encryptPassword, _ := EncryptData(cui.KEY, []byte(user.Password))
-	insertQuery := "INSERT INTO user_info (username, password, expire_time) VALUES (?, ?, ?)"
+	//encryptPassword, _ := EncryptData(cui.KEY, []byte(user.Password))
+	encryptPassword := user.Password
+	insertQuery := "INSERT INTO userInfo_userinfo  (username, password, time) VALUES (?, ?, ?)"
 	result, err := cui.DBController.Exec(insertQuery, user.UserName, encryptPassword, user.ExpireTime)
 	if err != nil {
 		return -1, err
@@ -49,9 +53,10 @@ func (cui *ControllerUserInfo) Add(user *UserInfo) (int64, error) {
 	}
 	return lastInsertID, nil
 }
+
 func (cui *ControllerUserInfo) SetExpireTime(user *UserInfo, time time.Time) error {
 
-	modifyQuery := "UPDATE user_info SET expire_time = ? WHERE username = ?"
+	modifyQuery := "UPDATE userInfo_userinfo SET time = ? WHERE username = ?"
 	_, err := cui.DBController.Exec(modifyQuery, user.ExpireTime, user.UserName)
 	if err != nil {
 		return err
@@ -59,7 +64,9 @@ func (cui *ControllerUserInfo) SetExpireTime(user *UserInfo, time time.Time) err
 	return nil
 }
 func (cui *ControllerUserInfo) CheckUser(user *UserInfo) error {
-	query := "SELECT password, expire_time FROM user_info WHERE username = ?"
+	defer cui.DBController.Close()
+	fmt.Println("进入了")
+	query := "SELECT password, time FROM userInfo_userinfo WHERE username = ?"
 	result, err := cui.DBController.Query(query, user.UserName)
 	defer result.Close()
 	if err != nil {
@@ -75,8 +82,8 @@ func (cui *ControllerUserInfo) CheckUser(user *UserInfo) error {
 		}
 	}
 
-	decryptPassword, _ := DecryptData(cui.KEY, password)
-
+	//decryptPassword, _ := DecryptData(cui.KEY, password)
+	decryptPassword := password
 	if string(decryptPassword) != user.Password {
 		return errors.New(ProtocolMap[PASSWORD_INCORRET].(string))
 	}
